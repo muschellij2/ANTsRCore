@@ -7,10 +7,10 @@
 #' @return Array, logical if all values within 0, 1, \code{NA}, and \code{NaN}
 #' @export
 coerce_mask = function(x, error = TRUE) {
-  x = as.array(x)
   if (typeof(x) == "logical") {
     return(x)
   }
+  x = as.array(x)
   # checking if zeroes and ones
   one = x == 1
   check = (x == 0 || one)
