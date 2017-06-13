@@ -58,6 +58,8 @@ n4BiasFieldCorrection <- function(img ,
     }
   }
   
+  outimg <- antsImageClone(img)
+  
   args =
     list(d = outimg@dimension,
          i = img)
@@ -70,7 +72,6 @@ n4BiasFieldCorrection <- function(img ,
   args$o = outimg
   args$v = as.numeric(verbose)
   
-  outimg <- antsImageClone(img)
   .helpn4BiasFieldCorrection(args)
   return(outimg)
 }
