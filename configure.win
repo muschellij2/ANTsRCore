@@ -51,7 +51,7 @@ echo "PKG_CPPFLAGS =${PKG_CPPFLAGS} -Wa,-mbig-obj -I\${ITK} -I\${PWD} -I\${myant
 
 echo "CXX_STD=CXX11" >> Makevars.win
 # echo "SHLIB_CXXLD=-Wl,--allow-multiple-definition,--enable-auto-import,--enable-runtime-pseudo-reloc,--verbose" >> Makevars.win
-echo "SHLIB_CXXLD=${CMAKE_EXE_LINKER_FLAGS}"
+echo "SHLIB_CXXLD=${CMAKE_EXE_LINKER_FLAGS}" >> Makevars.win
 
 # echo "myantslib=\"\${PWD}/antb/lib/\"" >> Makevars.win
 echo "myantslib=\${PWD}/antb/lib/">> Makevars.win
@@ -88,7 +88,7 @@ libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 # echo "PKG_LIBS=${PKG_LIBS} ${libitk} ${libants} ${libitk} ${libants} ${libitk} ${libants} ${libitk} \
 #                ${libants} ${libitk} ${libants} ${libitk} ${libants} ${libitk} \
 #                ${libants}" >> Makevars.win
-echo "PKG_LIBS=${PKG_LIBS} ${libitk} ${libants} ${libitk} ${libants} " >> Makevars.win
+echo "PKG_LIBS=${PKG_LIBS} ${ADD_PKG_LIBS} ${libitk} ${libants} ${libitk} ${libants} " >> Makevars.win
 
 echo ".PHONY: all libs" >> Makevars.win
 
