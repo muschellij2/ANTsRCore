@@ -143,6 +143,31 @@ cp -r ants/ImageRegistration/* ../inst/include/
 cp -r ants/ImageSegmentation/* ../inst/include/
 cp -r ants/Temporary/* ../inst/include
 
+# ITK 6 requires semicolons after several ITK macro declarations. The ANTs
+# headers copied into inst/include still use the older style, so patch them
+# in place before we compile on Windows.
+"${rscript}" -e '
+fix_macros <- function(path) {
+  lines <- readLines(path, warn = FALSE)
+  pat <- "^[[:space:]]*itk(?:TypeMacro|SetStringMacro|GetStringMacro|SetMacro|GetMacro|GetConstMacro|BooleanMacro|SetClampMacro)\\(.*\\)[[:space:]]*$"
+  idx <- grepl(pat, lines) & !grepl(";[[:space:]]*$", lines)
+  lines[idx] <- sub("\\)[[:space:]]*$", ");", lines[idx])
+  writeLines(lines, path)
+}
+
+files <- c(
+  "../inst/include/antsCommandLineOption.h",
+  "../inst/include/antsCommandLineParser.h",
+  "../inst/include/itkLabeledPointSetFileReader.h",
+  "../inst/include/itkLabeledPointSetFileWriter.h",
+  "../inst/include/itkImageIntensityAndGradientToPointSetFilter.h",
+  "../inst/include/itkLogTensorImageFilter.h"
+)
+for (f in files) {
+  if (file.exists(f)) fix_macros(f)
+}
+'
+
 cd ./antb
 
 cmaker=`"${rscript}" -e "x=Sys.which('cmake'); cat(x)"`
