@@ -52,6 +52,18 @@ jobs:
           pkgdir <- dirname(desc)
           install.packages(pkgdir, repos = NULL, type = "source", lib = lib)
 
+      - name: Remove ITKR remote for Windows binary build
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("ITKR", quietly = TRUE)) {
+            stop("ITKR binary is not installed, refusing to edit DESCRIPTION")
+          }
+
+          desc <- "DESCRIPTION"
+          lines <- readLines(desc, warn = FALSE)
+          lines <- lines[!grepl("^Remotes:\\s*", lines)]
+          writeLines(lines, desc)
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
