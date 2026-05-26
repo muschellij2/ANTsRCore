@@ -1,103 +1,82 @@
-#!/bin/bash
-git_exe=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "x=Sys.which('git'); cat(x)"`
+#!/usr/bin/env bash
+
+# Windows-specific configure script.
+# Keep the same overall structure as configure, but use Windows-safe
+# tool discovery, path normalization, and CMake generator settings.
+
+rscript="${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe"
+rexe="${R_HOME}/bin${R_ARCH_BIN}/R.exe"
+
+git_exe=`"${rscript}" -e "cat(Sys.which('git'))"`
 if [ -z "${git_exe}" ]; then
-    ${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
+    "${rscript}" -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
     str="repo = git2r::init();"
     str="${str} if (length(git2r::commits(repo)) > 0) {"
     str="${str} x=git2r::sha(git2r::last_commit(repo)) } else {x = ''};"
     str="${str} cat(x)"
-    antsrtag=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "${str}"`
+    antsrtag=`"${rscript}" -e "${str}"`
 else
     antsrtag=`git log --pretty=format:'%H' -n 1`
 fi
-CXX_STD=CXX11
-CC=`${R_HOME}/bin${R_ARCH_BIN}/R.exe CMD config CC`
-CXX=`${R_HOME}/bin${R_ARCH_BIN}/R.exe CMD config CXX`
+
+CXX_STD=CXX17
+CC=`"${rexe}" CMD config CC`
+CXX=`"${rexe}" CMD config CXX`
 JTHREADS=1
-# CMAKE_C_FLAGS="-O2"
-# CMAKE_CXX_FLAGS="-O2"
-ADD_PKG_LIBS="-lws2_32 -lgdi32 -mwindows -msse4.1 -mssse3 "
-# CMAKE_EXE_LINKER_FLAGS="${ADD_PKG_LIBS} -Wl,--allow-multiple-definition -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc, -Wl,--verbose"
-TRY_LINKER_FLAGS="${ADD_PKG_LIBS} -Wl,--allow-multiple-definition -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc, -Wl,--verbose -Wa,-mbig-obj"
-# DLLFLAGS="${DLLFLAGS} -Wl,--allow-multiple-definition -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc, -Wl,--verbose"
+
+# Windows-specific linker flags that the package needs on Rtools.
+ADD_PKG_LIBS="-lws2_32 -lgdi32 -mwindows -msse4.1 -mssse3"
+TRY_LINKER_FLAGS="${ADD_PKG_LIBS} -Wl,--allow-multiple-definition -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc -Wa,-mbig-obj"
 DLLFLAGS="${DLLFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
-# PKG_CPPFLAGS="${PKG_CPPFLAGS} -Wl,--allow-multiple-definition,--enable-auto-import,--enable-runtime-pseudo-reloc,--verbose"
 PKG_CPPFLAGS="${PKG_CPPFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
 
-ITKRCMAKE=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'a<-ITKR::itkIncludes(); cat(a)'`
-ITKRLIB=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'a<-ITKR::itkLibs(); cat(a)'`
-compflags=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'a<-ITKR:::itkCompileFlags(); cat(a)'`
-ITKDIR=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'a<-ITKR::itkDir(); cat(a)'`
-ITKTAG=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'env = asNamespace("ITKR"); if ("itkTag" %in% names(env)) cat(ITKR::itkTag()) else cat("")'`
-
-# compflags="${compflags} -Wno-c++11-long-long -Wa,-mbig-obj "
+ITKRCMAKE=`"${rscript}" -e 'a<-ITKR:::itkIncludes(); cat(a)'`
+ITKRLIB=`"${rscript}" -e 'a<-ITKR:::itkLibs(); cat(a)'`
+compflags=`"${rscript}" -e 'a<-ITKR:::itkCompileFlags(); cat(a)'`
+ITKDIR=`"${rscript}" -e 'a<-ITKR:::itkDir(); cat(a)'`
+ITKTAG=`"${rscript}" -e 'env = asNamespace("ITKR"); if ("itkTag" %in% names(env)) cat(ITKR::itkTag()) else cat("")'`
 
 CMAKE_BUILD_TYPE=Release
+
 cd ./src
-# PWD=`pwd`
-PWD=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'cat(normalizePath(".", winslash="/"))'`
+PWD=`"${rscript}" -e 'cat(normalizePath(".", winslash="/"))'`
+
 # platform-specific Makevars
 echo "PWD=${PWD}" > Makevars.win
-myantslib=${PWD}/antb/lib/
-antsexdir=${PWD}/antb/ANTS-build/Examples/
 echo "myantssource=\${PWD}/ants" >> Makevars.win
-echo "ITK=\"${ITKRCMAKE}\"" >> Makevars.win
+echo "ITK=${ITKRCMAKE}" >> Makevars.win
 
-needVCL_CAN_STATIC_CONST_INIT_FLOAT=0
-echo $OSTYPE $needVCL_CAN_STATIC_CONST_INIT_FLOAT
 echo "PKG_CPPFLAGS =${PKG_CPPFLAGS} -Wa,-mbig-obj -I\${ITK} -I\${PWD} -I\${myantssource}/Examples/include/ \
   -I\${myantssource}/Utilities -I\${myantssource}/Examples/ -I../inst/include/ \
   -I\${myantssource}/Tensor/ " >> Makevars.win
 
-echo "CXX_STD=CXX11" >> Makevars.win
-# echo "SHLIB_CXXLD=-Wl,--allow-multiple-definition,--enable-auto-import,--enable-runtime-pseudo-reloc,--verbose" >> Makevars.win
+echo "CXX_STD=${CXX_STD}" >> Makevars.win
 echo "SHLIB_CXXLD=${CMAKE_EXE_LINKER_FLAGS}" >> Makevars.win
-
-# echo "myantslib=\"\${PWD}/antb/lib/\"" >> Makevars.win
-echo "myantslib=\${PWD}/antb/lib/">> Makevars.win
-echo "antsexdir=\${PWD}/antb/ANTS-build/Examples/">> Makevars.win
-# echo "libants=\`find \"\${myantslib}\" -name \"lib*.a\"\`" >> Makevars.win
-# echo "libitk=\`find \"${ITKRLIB}\" -name \"lib*.a\"\`" >> Makevars.win
-
-# PKG_LIBS="${PKG_LIBS} ${ADD_PKG_LIBS}"
-# echo "PKG_LIBS=${PKG_LIBS} \${libants} \${libitk} \${libants} \${libitk} \
-#                   \${libants} \${libitk} \${libants} \${itklib} \${libants} " >> Makevars.win
+echo "myantslib=\${PWD}/antb/lib/" >> Makevars.win
+echo "antsexdir=\${PWD}/antb/ANTS-build/Examples/" >> Makevars.win
 
 str="x = list.files(pattern = 'lib.*.a', path='"
 str="${str}${ITKRLIB}'"
 str="${str}); x = sub('[.]a$', '', x); x = sub('^lib', '', x); cat(paste0('-l', x), sep = ' ')"
-libitk=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "${str}"`
-echo "Running libitk"
+libitk=`"${rscript}" -e "${str}"`
 libitk="-L${ITKRLIB} ${libitk}"
-echo "Running ${libitk}"
 
-# str="x = list.files(pattern = 'lib.*.a', path='"
-# str="${str}${myantslib}'"
-# str="${str}); x = sub('[.]a$', '', x); cat(paste0('-l', x), sep = ' ')"
-# libants=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "${str}"`
-# echo "Running libants"
-# libants="-L${myantslib} ${libants}"
-# echo "Running ${libants}"
-libants="-L${myantslib} -L${antsexdir} -lantsUtilities -ll_antsAffineInitializer -ll_antsApplyTransforms "
+# ANTs Windows library names are not discovered with find(), so keep the
+# explicit list that matches the Windows build layout.
+libants="-L${PWD}/antb/lib/ -L${PWD}/antb/ANTS-build/Examples/ -lantsUtilities -ll_antsAffineInitializer -ll_antsApplyTransforms "
 libants="${libants} -ll_antsApplyTransformsToPoints -ll_antsJointFusion -ll_antsMotionCorr "
 libants="${libants} -ll_antsMotionCorrStats -ll_antsRegistration -ll_Atropos -ll_DenoiseImage "
 libants="${libants} -ll_KellyKapowski -ll_LabelClustersUniquely -ll_LabelGeometryMeasures "
 libants="${libants} -ll_N3BiasFieldCorrection -ll_N4BiasFieldCorrection -ll_ResampleImage "
 libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 
-# echo "PKG_LIBS=${PKG_LIBS} ${libitk} ${libants} ${libitk} ${libants} ${libitk} ${libants} ${libitk} \
-#                ${libants} ${libitk} ${libants} ${libitk} ${libants} ${libitk} \
-#                ${libants}" >> Makevars.win
 echo "PKG_LIBS=${PKG_LIBS} ${ADD_PKG_LIBS} ${libitk} ${libants} ${libitk} ${libants} " >> Makevars.win
 
 echo ".PHONY: all libs" >> Makevars.win
-
 echo "all: \$(SHLIB)" >> Makevars.win
-
 echo "\$(SHLIB): libs" >> Makevars.win
-# MAKER=c:/Rtools/mingw_64/bin${R_ARCH_BIN}/mingw32-make.exe
-MAKER=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "x=normalizePath(Sys.which('make'), winslash = '/'); cat(x)"`
-# MAKER=mingw32-make.exe
+
+MAKER=`"${rscript}" -e "x=normalizePath(Sys.which('make'), winslash = '/'); cat(x)"`
 echo "MAKE IS"
 echo "${MAKER}"
 echo "libs: ; mkdir -p libs; cd antb && ls && ${MAKER} -j 4 && cd ANTS-build && ls && ${MAKER} all install && rm -rf ${R_PACKAGE_DIR}/libs/bin && cd ../../" >> Makevars.win
@@ -108,48 +87,47 @@ antsMotionCorrStats ResampleImage Atropos KellyKapowski DenoiseImage \
 N3BiasFieldCorrection N4BiasFieldCorrection sccan antsJointFusion \
 ThresholdImage LabelClustersUniquely SurfaceBasedSmoothing" >> Makevars
 
-
 # get / set up ANTs code
-# antsgit=https://github.com/ANTsX/ANTs.git
 antsgit=https://github.com/muschellij2/ANTs.git
 antstag=d30526f9cb5159bc0a3e9011f7ae5f409b3634c8 # with itk v5.3rc03
+
 if [ -z "${git_exe}" ]; then
-    ${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
+    "${rscript}" -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
     str="repo = git2r::clone(\""
     str="${str}${antsgit}"
     str="${str}\", local_path = \"./ants\")"
-    ${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "${str}"
+    "${rscript}" -e "${str}"
 else
-    git clone $antsgit ants
+    git clone "$antsgit" ants
 fi
+
 mkdir -p ../data
 
 cd ants
 
 if [ -z "${git_exe}" ]; then
-    ${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
+    "${rscript}" -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
     str="repo = git2r::init()"
     if [ -n "${antstag}" ]; then
         str="${str}; git2r::checkout(repo, branch = \""
         str="${str}${antstag}"
         str="${str}\");"
     fi
-    ${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "${str}"
+    "${rscript}" -e "${str}"
 else
-    git checkout master;
-    git pull;
-    git checkout $antstag ;
+    git checkout master
+    git pull
+    git checkout $antstag
 fi
 
-# windows workaround for warning
-if [ -a "./CMake/ITKSetStandardCompilerFlags.cmake" ];
-then
+# Windows workaround for a warning in the ANTs CMake helpers.
+if [ -a "./CMake/ITKSetStandardCompilerFlags.cmake" ]; then
     echo "working on ITKSetStandardCompilerFlags.cmake"
     str='fname="./CMake/ITKSetStandardCompilerFlags.cmake";'
     str=${str}'if (file.exists(fname)) {x=readLines(fname); '
     str=${str}'x = sub("VerboseWarningsFlag -W3", "VerboseWarningsFlag ", x); '
     str=${str}'writeLines(x, fname)}'
-    ${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "${str}"
+    "${rscript}" -e "${str}"
 fi
 
 cd ../
@@ -157,39 +135,35 @@ mkdir -p antb
 cp ../inst/include/antscore.h ./ants/Examples/include/ants.h
 cp -r ants/Examples/include/* ../inst/include/
 cp -r ants/Utilities/* ../inst/include/
-cp -r ants/Examples/*  ../inst/include/
-cp -r ants/Tensor/*  ../inst/include/
+cp -r ants/Examples/* ../inst/include/
+cp -r ants/Tensor/* ../inst/include/
 cp -r ants/ImageRegistration/* ../inst/include/
 cp -r ants/ImageSegmentation/* ../inst/include/
 cp -r ants/Temporary/* ../inst/include
+
 cd ./antb
 
-cmaker=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "x=Sys.which('cmake'); cat(x)"`
+cmaker=`"${rscript}" -e "x=Sys.which('cmake'); cat(x)"`
 if [ -z "${cmaker}" ]; then
-    res=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "cat(('cmaker' %in% installed.packages())*1)"`
-    if [ $res -eq 0 ];
-    then
+    res=`"${rscript}" -e "cat(('cmaker' %in% installed.packages())*1)"`
+    if [ $res -eq 0 ]; then
         git clone https://github.com/stnava/cmaker
         R CMD INSTALL cmaker
         rm -rf cmaker
     fi
-    cmaker=`${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe -e "x=cmaker::cmake();"`
-    # cmake_path=`dirname cmaker`
-    # export PATH=${PATH}:${cmake_path}
-    # cmaker="cmake"
+    cmaker=`"${rscript}" -e "x=cmaker::cmake();"`
 else
     cmaker="cmake.exe"
 fi
 
 echo ${cmaker}
 
-
-${cmaker} \
+"${cmaker}" \
     -G "MinGW Makefiles" \
     -DITK_DIR:PATH="${ITKDIR}" \
     -DCMAKE_SH:BOOL=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -Wa,-mbig-obj ${CMAKE_EXE_LINKER_FLAGS} ${compflags} -DNDEBUG -D_FILE_OFFSET_BITS=64"\
-    -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -Wa,-mbig-obj ${compflags} -DNDEBUG  "\
+    -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -Wa,-mbig-obj ${CMAKE_EXE_LINKER_FLAGS} ${compflags} -DNDEBUG -D_FILE_OFFSET_BITS=64" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -Wa,-mbig-obj ${compflags} -DNDEBUG" \
     -DCMAKE_EXE_LINKER_FLAGS="${TRY_LINKER_FLAGS}" \
     -DBUILD_SHARED_LIBS=OFF \
     -DANTS_INSTALL_LIBS_ONLY=ON \
@@ -203,9 +177,8 @@ ${cmaker} \
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="../ants/lib/" \
     -DCMAKE_INSTALL_PREFIX:PATH="${R_PACKAGE_DIR}/libs/" \
     -DCMAKE_BUILD_TYPE:STRING="${CMAKE_BUILD_TYPE}" \
-    -DVNL_CONFIG_ENABLE_SSE2_ROUNDING:BOOL=ON \
-    -DVNL_CONFIG_ENABLE_SSE2:BOOL=ON \
     ../ants
+
 cd ../
 # needed for warning
 rm -rf ants/.git
