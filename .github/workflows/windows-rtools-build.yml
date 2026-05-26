@@ -33,7 +33,7 @@ jobs:
         run: |
           $asset = $env:ITKR_RELEASE_ASSET
           $url = "https://github.com/muschellij2/ITKR/releases/latest/download/$asset"
-          $lib = $env:R_LIBS_SITE
+          $lib = & Rscript -e "cat(file.path(dirname(.Library), 'site-library'))"
           $unpack = Join-Path $env:RUNNER_TEMP 'itkr-unpack'
           Remove-Item -Recurse -Force $unpack -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Path $unpack | Out-Null
