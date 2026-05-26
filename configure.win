@@ -88,8 +88,10 @@ N3BiasFieldCorrection N4BiasFieldCorrection sccan antsJointFusion \
 ThresholdImage LabelClustersUniquely SurfaceBasedSmoothing" >> Makevars
 
 # get / set up ANTs code
-antsgit=https://github.com/muschellij2/ANTs.git
-antstag=516d24180390dd3bb18c6a507bc1651b5a183b85 # with itk v5.3rc03
+# Keep the same upstream ANTs pin as configure; only the Windows fetch/build
+# mechanics differ here.
+antsgit=https://github.com/ANTsX/ANTs.git
+antstag=516d24180390dd3bb18c6a507bc1651b5a183b85 # 2025-05-09 PPD in aat
 
 if [ -z "${git_exe}" ]; then
     "${rscript}" -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
