@@ -22,7 +22,7 @@ jobs:
       ITKR_RELEASE_ASSET: ITKR-${{ matrix.r-version }}.zip
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -35,13 +35,32 @@ jobs:
         run: |
           install.packages(c("Rcpp", "RcppEigen"), repos = "https://cloud.r-project.org")
 
-      - name: Install ITKR binary from release
+      - name: Install ITKR binary from ANTsX/ITKR release when available
         shell: pwsh
         run: |
-          $asset = $env:ITKR_RELEASE_ASSET
-          $url = "https://github.com/muschellij2/ITKR/releases/latest/download/$asset"
-          Invoke-WebRequest -Uri $url -OutFile $asset
-          R CMD INSTALL $asset
+          $repo = "ANTsX/ITKR"
+          $assetName = $env:ITKR_RELEASE_ASSET
+          $headers = @{
+            "User-Agent" = "actions/runner"
+          }
+
+          $release = Invoke-RestMethod -Headers $headers -Uri "https://api.github.com/repos/$repo/releases/latest"
+          $asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
+
+          if (-not $asset) {
+            $asset = $release.assets |
+              Where-Object { $_.name -match '\.zip$' -and $_.name -match '(?i)win|windows|release' } |
+              Select-Object -First 1
+          }
+
+          if ($asset) {
+            Write-Host "Installing $($asset.name) from $repo"
+            Invoke-WebRequest -Headers $headers -Uri $asset.browser_download_url -OutFile $asset.name
+            R CMD INSTALL $asset.name
+          } else {
+            Write-Host "No matching Windows binary found in $repo; installing ITKR from source"
+            Rscript -e 'install.packages("remotes", repos = "https://cloud.r-project.org"); remotes::install_github("ANTsX/ITKR", upgrade = "never")'
+          }
 
       - name: Build ANTsRCore
         shell: cmd
