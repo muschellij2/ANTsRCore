@@ -31,3 +31,5 @@ zzz_Comparison2\.R
 ^autoci\.yml$
 ^autoci_pkgdown\.yml$
 ^tic\.R$
+^\.positai$
+^\.claude$
