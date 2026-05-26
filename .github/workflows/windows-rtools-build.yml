@@ -33,6 +33,7 @@ jobs:
         run: |
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
           url <- sprintf("https://github.com/muschellij2/ITKR/releases/latest/download/%s", asset)
+          dest <- file.path(tempdir(), asset)
           download.file(url, dest, mode = "wb", quiet = TRUE)
           install.packages(dest, repos = NULL, type = "win.binary")
 
