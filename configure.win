@@ -89,7 +89,7 @@ ThresholdImage LabelClustersUniquely SurfaceBasedSmoothing" >> Makevars
 
 # get / set up ANTs code
 antsgit=https://github.com/muschellij2/ANTs.git
-antstag=d30526f9cb5159bc0a3e9011f7ae5f409b3634c8 # with itk v5.3rc03
+antstag=516d24180390dd3bb18c6a507bc1651b5a183b85 # with itk v5.3rc03
 
 if [ -z "${git_exe}" ]; then
     "${rscript}" -e 'if (!requireNamespace("git2r")) install.packages("git2r")'
