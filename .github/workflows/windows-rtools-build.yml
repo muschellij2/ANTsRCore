@@ -34,7 +34,7 @@ jobs:
           $asset = $env:ITKR_RELEASE_ASSET
           $url = "https://github.com/muschellij2/ITKR/releases/latest/download/$asset"
           Invoke-WebRequest -Uri $url -OutFile $asset
-          Rscript -e "install.packages('$asset', repos = NULL, type = 'win.binary', lib = .libPaths()[1])"
+          Rscript -e "lib <- file.path(dirname(.Library), 'site-library'); dir.create(lib, recursive = TRUE, showWarnings = FALSE); install.packages('$asset', repos = NULL, type = 'source', lib = lib)"
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
