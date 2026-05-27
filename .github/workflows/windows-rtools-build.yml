@@ -92,7 +92,7 @@ jobs:
           desc <- "DESCRIPTION"
           lines <- readLines(desc, warn = FALSE)
           rem = grepl("^Remotes:\\s*", lines)
-          lines[rem] <- sub("ANTsX/ITKR", "local::ITKR", lines[rem])
+          lines[rem] <- sub("ANTsX/ITKR", "any::ITKR", lines[rem])
           writeLines(lines, desc)
 
       - uses: r-lib/actions/setup-r-dependencies@v2
