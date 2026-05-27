@@ -51,6 +51,22 @@ jobs:
           }
           print(paste0("desc", desc))
           
+          get_description_deps <- function(path = "DESCRIPTION",
+                                 fields = c("Depends", "Imports", "LinkingTo"),
+                                 include_r = FALSE) {
+            dcf <- read.dcf(path)
+          
+            deps <- tools:::.split_dependencies(dcf[1, fields[fields %in% colnames(dcf)]])
+            pkgs <- names(deps)
+          
+            if (!include_r) {
+              pkgs <- setdiff(pkgs, "R")
+            }
+          
+            unique(pkgs)
+          }
+          install.packages(get_description_deps(desc))
+          
           pkgdir <- dirname(desc)
           print(paste0("pkgdir is ", pkgdir))
           print(list.files(pkgdir))
