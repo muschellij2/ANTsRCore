@@ -92,7 +92,7 @@ jobs:
           desc <- "DESCRIPTION"
           lines <- readLines(desc, warn = FALSE)
           rem = grepl("^Remotes:\\s*", lines)
-          itkr_source = normalizePath(find.package("ITKR"))
+          itkr_source = normalizePath(find.package("ITKR"), winslash = "/")
           lines[rem] <- sub("ANTsX/ITKR", paste0("ITKR=local::", itkr_source), lines[rem])
           writeLines(lines, desc)
 
