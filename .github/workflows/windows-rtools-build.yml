@@ -72,19 +72,16 @@ jobs:
           print(list.files(pkgdir))
           ver = read.dcf(desc, "Version")[,1]
           tdir = getwd()
-          fname = file.path(tdir, paste0("ITKR_", ver, ".zip"))
-          print(paste0("fname, ", fname))
+          itkr_source = file.path(tdir, paste0("ITKR_", ver, ".zip"))
+          print(paste0("itkr_source, ", itkr_source))
           setwd(dirname(pkgdir))
-          zip(fname, files = list.files("ITKR/", recursive = TRUE, full.names = TRUE))
+          zip(itkr_source, files = list.files("ITKR/", recursive = TRUE, full.names = TRUE))
           setwd(tdir)
-          print(paste0("fname, ", fname))
+          print(paste0("itkr_source, ", itkr_source))
           install.packages(fname, repos = NULL, type = "win.binary")
           print("require")
           print(requireNamespace("ITKR", quietly = FALSE))
 
-      - name: Remove ITKR remote for Windows binary build
-        shell: Rscript {0}
-        run: |
           if (!requireNamespace("ITKR", quietly = TRUE)) {
             stop("ITKR binary is not installed, refusing to edit DESCRIPTION")
           }
@@ -92,10 +89,8 @@ jobs:
           desc <- "DESCRIPTION"
           lines <- readLines(desc, warn = FALSE)
           rem = grepl("^Remotes:\\s*", lines)
-          rcpp_source = normalizePath(find.package("Rcpp"), winslash = "/")
-          itkr_source = normalizePath(find.package("ITKR"), winslash = "/")
-          lines[rem] <- sub("ANTsX/ITKR", paste0("ITKR=local::", itkr_source,
-          ", ", "Rcpp=local::", rcpp_source), lines[rem])
+          itkr_source = normalizePath(itkr_source, winslash = "/")
+          lines[rem] <- sub("ANTsX/ITKR", paste0("ITKR=local::", itkr_source), lines[rem])
           writeLines(lines, desc)
 
       - uses: r-lib/actions/setup-r-dependencies@v2
