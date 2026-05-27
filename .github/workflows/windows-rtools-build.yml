@@ -50,8 +50,8 @@ jobs:
           }
           try({install.packages(dest, repos = NULL, type = "win.binary")})
           
-          print(list.files(pkgdir))
           pkgdir <- dirname(desc)
+          print(list.files(pkgdir))
           install.packages(pkgdir, repos = NULL, type = "win.binary")
 
       - name: Remove ITKR remote for Windows binary build
