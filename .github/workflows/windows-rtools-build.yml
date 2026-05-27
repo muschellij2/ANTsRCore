@@ -33,11 +33,9 @@ jobs:
         run: |
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
           url <- sprintf("https://github.com/muschellij2/ITKR/releases/latest/download/%s", asset)
-          lib <- file.path(dirname(.Library), "site-library")
           dest <- file.path(tempdir(), asset)
           unpack <- file.path(tempdir(), "itkr-unpack")
 
-          dir.create(lib, recursive = TRUE, showWarnings = FALSE)
           unlink(unpack, recursive = TRUE, force = TRUE)
           dir.create(unpack, recursive = TRUE, showWarnings = FALSE)
 
@@ -50,7 +48,7 @@ jobs:
           }
 
           pkgdir <- dirname(desc)
-          install.packages(pkgdir, repos = NULL, type = "source", lib = lib)
+          install.packages(pkgdir, repos = NULL, type = "source")
 
       - name: Remove ITKR remote for Windows binary build
         shell: Rscript {0}
