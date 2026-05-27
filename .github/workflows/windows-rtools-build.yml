@@ -40,13 +40,17 @@ jobs:
           dir.create(unpack, recursive = TRUE, showWarnings = FALSE)
 
           download.file(url, dest, mode = "wb", quiet = TRUE)
+          print(getOption("unzip"))
           unzip(dest, exdir = unpack)
+          print(list.files(unpack, recursive = TRUE))
 
           desc <- list.files(unpack, pattern = "^DESCRIPTION$", recursive = TRUE, full.names = TRUE)[1]
           if (is.na(desc) || !nzchar(desc)) {
             stop(sprintf("Could not find DESCRIPTION inside %s", asset))
           }
-
+          try({install.packages(dest, repos = NULL, type = "win.binary")})
+          
+          print(list.files(pkgdir))
           pkgdir <- dirname(desc)
           install.packages(pkgdir, repos = NULL, type = "win.binary")
 
