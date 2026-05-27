@@ -34,7 +34,7 @@ jobs:
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
           url <- sprintf("https://github.com/muschellij2/ITKR/releases/latest/download/%s", asset)
           dest <- file.path(tempdir(), asset)
-          unpack <- file.path(tempdir(), "itkr-unpack")
+          unpack <- file.path(tempdir(), "ITKR")
 
           unlink(unpack, recursive = TRUE, force = TRUE)
           dir.create(unpack, recursive = TRUE, showWarnings = FALSE)
