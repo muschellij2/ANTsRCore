@@ -49,7 +49,7 @@ jobs:
           if (is.na(desc) || !nzchar(desc)) {
             stop(sprintf("Could not find DESCRIPTION inside %s", asset))
           }
-          try({install.packages(dest, repos = NULL, type = "win.binary")})
+          print("desc", desc)
           
           pkgdir <- dirname(desc)
           print(paste0("pkgdir is ", pkgdir))
