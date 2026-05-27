@@ -33,9 +33,24 @@ jobs:
         run: |
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
           url <- sprintf("https://github.com/muschellij2/ITKR/releases/latest/download/%s", asset)
+          lib <- file.path(dirname(.Library), "site-library")
           dest <- file.path(tempdir(), asset)
+          unpack <- file.path(tempdir(), "itkr-unpack")
+
+          dir.create(lib, recursive = TRUE, showWarnings = FALSE)
+          unlink(unpack, recursive = TRUE, force = TRUE)
+          dir.create(unpack, recursive = TRUE, showWarnings = FALSE)
+
           download.file(url, dest, mode = "wb", quiet = TRUE)
-          install.packages(dest, repos = NULL, type = "win.binary")
+          unzip(dest, exdir = unpack)
+
+          desc <- list.files(unpack, pattern = "^DESCRIPTION$", recursive = TRUE, full.names = TRUE)[1]
+          if (is.na(desc) || !nzchar(desc)) {
+            stop(sprintf("Could not find DESCRIPTION inside %s", asset))
+          }
+
+          pkgdir <- dirname(desc)
+          install.packages(pkgdir, repos = NULL, type = "source", lib = lib)
 
       - name: Remove ITKR remote for Windows binary build
         shell: Rscript {0}
