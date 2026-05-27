@@ -188,21 +188,12 @@ if [ -z "${cmake_real}" ]; then
 fi
 
 antbdir=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
-cmakewrap="${antbdir}/cmake.cmd"
-cpackwrap="${antbdir}/cpack.cmd"
-ctestwrap="${antbdir}/ctest.cmd"
-cat > "${cmakewrap}" <<EOF
-@echo off
-"${cmake_real}" %*
-EOF
-cat > "${cpackwrap}" <<EOF
-@echo off
-"${cmake_real%cmake.exe}cpack.exe" %*
-EOF
-cat > "${ctestwrap}" <<EOF
-@echo off
-"${cmake_real%cmake.exe}ctest.exe" %*
-EOF
+cmakewrap="${antbdir}/cmake.exe"
+cpackwrap="${antbdir}/cpack.exe"
+ctestwrap="${antbdir}/ctest.exe"
+cp -f "${cmake_real}" "${cmakewrap}"
+cp -f "${cmake_real%cmake.exe}cpack.exe" "${cpackwrap}"
+cp -f "${cmake_real%cmake.exe}ctest.exe" "${ctestwrap}"
 
 cmaker="${cmakewrap}"
 
