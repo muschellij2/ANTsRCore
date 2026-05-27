@@ -48,7 +48,7 @@ jobs:
           }
 
           pkgdir <- dirname(desc)
-          install.packages(pkgdir, repos = NULL, type = "source")
+          install.packages(pkgdir, repos = NULL, type = "win.binary")
 
       - name: Remove ITKR remote for Windows binary build
         shell: Rscript {0}
