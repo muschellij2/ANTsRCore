@@ -103,6 +103,42 @@ jobs:
         run: |
           R CMD INSTALL .
 
+      - name: Collect antb build files on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          $staging = Join-Path $env:RUNNER_TEMP 'antb-debug'
+          New-Item -ItemType Directory -Force -Path $staging | Out-Null
+
+          $roots = @($env:GITHUB_WORKSPACE, $env:RUNNER_TEMP, 'D:\a')
+          $matches = foreach ($root in $roots) {
+            if (Test-Path $root) {
+              Get-ChildItem -Path $root -Recurse -File -Filter CMakeCache.txt -ErrorAction SilentlyContinue |
+                Where-Object { $_.FullName -match '\\antb\\CMakeCache\.txt$' } |
+                ForEach-Object { Split-Path $_.FullName -Parent }
+            }
+          } | Sort-Object -Unique
+
+          if (-not $matches) {
+            Write-Warning "No antb build directories found to collect."
+            exit 0
+          }
+
+          foreach ($dir in $matches) {
+            $label = Split-Path $dir -Leaf
+            $suffix = [Guid]::NewGuid().ToString('N').Substring(0, 8)
+            $target = Join-Path $staging "$label-$suffix"
+            Copy-Item -Path $dir -Destination $target -Recurse -Force
+          }
+
+      - name: Upload antb build files
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: antb-build-files-windows
+          path: ${{ runner.temp }}/antb-debug
+          if-no-files-found: warn
+
       - name: Smoke test
         shell: Rscript {0}
         run: |
