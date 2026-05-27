@@ -63,6 +63,8 @@ jobs:
           setwd(tdir)
           print(paste0("fname, ", fname))
           install.packages(fname, repos = NULL, type = "win.binary")
+          print("require")
+          print(requireNamespace("ITKR", quietly = FALSE))
 
       - name: Remove ITKR remote for Windows binary build
         shell: Rscript {0}
