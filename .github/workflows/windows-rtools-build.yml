@@ -78,7 +78,7 @@ jobs:
           zip(itkr_source, files = list.files("ITKR/", recursive = TRUE, full.names = TRUE))
           setwd(tdir)
           print(paste0("itkr_source, ", itkr_source))
-          install.packages(fname, repos = NULL, type = "win.binary")
+          install.packages(itkr_source, repos = NULL, type = "win.binary")
           print("require")
           print(requireNamespace("ITKR", quietly = FALSE))
 
