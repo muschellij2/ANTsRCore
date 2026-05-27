@@ -111,13 +111,15 @@ jobs:
           New-Item -ItemType Directory -Force -Path $staging | Out-Null
 
           $roots = @($env:GITHUB_WORKSPACE, $env:RUNNER_TEMP, 'D:\a')
-          $matches = foreach ($root in $roots) {
+          $matches = @()
+          foreach ($root in $roots) {
             if (Test-Path $root) {
-              Get-ChildItem -Path $root -Recurse -File -Filter CMakeCache.txt -ErrorAction SilentlyContinue |
+              $matches += Get-ChildItem -Path $root -Recurse -File -Filter CMakeCache.txt -ErrorAction SilentlyContinue |
                 Where-Object { $_.FullName -match '\\antb\\CMakeCache\.txt$' } |
                 ForEach-Object { Split-Path $_.FullName -Parent }
             }
-          } | Sort-Object -Unique
+          }
+          $matches = $matches | Sort-Object -Unique
 
           if (-not $matches) {
             Write-Warning "No antb build directories found to collect."

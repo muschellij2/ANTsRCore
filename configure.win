@@ -82,7 +82,7 @@ echo '	cd antb && ls' >> Makevars.win
 echo '	cd antb && cat Makefile' >> Makevars.win
 echo '	cd antb && make -j 4' >> Makevars.win
 echo '	cd antb && cd ANTS-build && ls' >> Makevars.win
-echo '	cd antb && cd ANTS-build && cat Makefile' >> Makevars.win
+echo '	cd antb && cd ANTS-build && ls -la' >> Makevars.win
 echo '	cd antb && cd ANTS-build && make install' >> Makevars.win
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
