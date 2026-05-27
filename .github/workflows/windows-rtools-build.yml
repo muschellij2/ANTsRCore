@@ -92,7 +92,8 @@ jobs:
           desc <- "DESCRIPTION"
           lines <- readLines(desc, warn = FALSE)
           rem = grepl("^Remotes:\\s*", lines)
-          lines[rem] <- sub("ANTsX/ITKR", "any::ITKR", lines[rem])
+          itkr_source = normalizePath(find.package("ITKR"))
+          lines[rem] <- sub("ANTsX/ITKR", paste0("ITKR=local::", itkr_source), lines[rem])
           writeLines(lines, desc)
 
       - uses: r-lib/actions/setup-r-dependencies@v2
