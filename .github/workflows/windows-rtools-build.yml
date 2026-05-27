@@ -49,7 +49,7 @@ jobs:
           if (is.na(desc) || !nzchar(desc)) {
             stop(sprintf("Could not find DESCRIPTION inside %s", asset))
           }
-          print("desc", desc)
+          print(paste0("desc", desc))
           
           pkgdir <- dirname(desc)
           print(paste0("pkgdir is ", pkgdir))
