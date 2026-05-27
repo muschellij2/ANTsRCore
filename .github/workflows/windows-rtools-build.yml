@@ -33,7 +33,7 @@ jobs:
         run: |
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
           url <- sprintf("https://github.com/muschellij2/ITKR/releases/latest/download/%s", asset)
-          dest <- file.path(tempdir(), asset)
+          dest <- file.path(tempdir(), "ITKR.zip")
           unpack <- file.path(tempdir(), "ITKR")
 
           unlink(unpack, recursive = TRUE, force = TRUE)
@@ -42,6 +42,7 @@ jobs:
           download.file(url, dest, mode = "wb", quiet = TRUE)
           print(getOption("unzip"))
           unzip(dest, exdir = unpack)
+          print("unpack")
           print(list.files(unpack, recursive = TRUE))
 
           desc <- list.files(unpack, pattern = "^DESCRIPTION$", recursive = TRUE, full.names = TRUE)[1]
@@ -51,6 +52,7 @@ jobs:
           try({install.packages(dest, repos = NULL, type = "win.binary")})
           
           pkgdir <- dirname(desc)
+          print(paste0("pkgdir is ", pkgdir))
           print(list.files(pkgdir))
           install.packages(pkgdir, repos = NULL, type = "win.binary")
 
