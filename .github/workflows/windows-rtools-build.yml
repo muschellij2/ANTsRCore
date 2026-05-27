@@ -58,9 +58,10 @@ jobs:
           tdir = getwd()
           fname = file.path(tdir, paste0("ITKR_", ver, ".zip"))
           print(paste0("fname, ", fname))
-          setwd(pkgdir)
-          zip(fname, files = list.files(".", recursive = TRUE, full.names = TRUE))
+          setwd(dirname(pkgdir))
+          zip(fname, files = list.files("ITKR/", recursive = TRUE, full.names = TRUE))
           setwd(tdir)
+          print(paste0("fname, ", fname))
           install.packages(fname, repos = NULL, type = "win.binary")
 
       - name: Remove ITKR remote for Windows binary build
