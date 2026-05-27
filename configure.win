@@ -76,7 +76,7 @@ echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win
 echo "\$(SHLIB): libs" >> Makevars.win
 
-echo "libs: ; mkdir -p libs; cd antb && ls && \$(MAKE) -j 4 && cd ANTS-build && ls && \$(MAKE) all install && rm -rf ${R_PACKAGE_DIR}/libs/bin && cd ../../" >> Makevars.win
+echo "libs: ; mkdir -p libs; cd antb && ls && make -j 4 && cd ANTS-build && ls && make all install && rm -rf ${R_PACKAGE_DIR}/libs/bin && cd ../../" >> Makevars.win
 
 echo "cleaner: ; cd ../libs/bin && rm -f antsRegistration antsApplyTransforms antsMotionCorr \
 antsAffineInitializer antsApplyTransformsToPoints LabelGeometryMeasures \
