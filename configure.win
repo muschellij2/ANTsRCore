@@ -33,13 +33,13 @@ PKG_CPPFLAGS="${PKG_CPPFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
 ITKRCMAKE=`"${rscript}" -e 'a<-ITKR:::itkIncludes(); cat(a)'`
 ITKRLIB=`"${rscript}" -e 'a<-ITKR:::itkLibs(); cat(a)'`
 compflags=`"${rscript}" -e 'a<-ITKR:::itkCompileFlags(); cat(a)'`
-ITKDIR=`"${rscript}" -e 'a<-ITKR:::itkDir(); cat(a)'`
+ITKDIR=`"${rscript}" -e 'a<-normalizePath(ITKR:::itkDir(), winslash="\\", mustWork=FALSE); cat(a)'`
 ITKTAG=`"${rscript}" -e 'env = asNamespace("ITKR"); if ("itkTag" %in% names(env)) cat(ITKR::itkTag()) else cat("")'`
 
 CMAKE_BUILD_TYPE=Release
 
 cd ./src
-PWD=`"${rscript}" -e 'cat(normalizePath(".", winslash="/"))'`
+PWD=`"${rscript}" -e 'cat(normalizePath(".", winslash="\\", mustWork=FALSE))'`
 
 # platform-specific Makevars
 echo "PWD=${PWD}" > Makevars.win
@@ -76,8 +76,15 @@ echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win
 echo "\$(SHLIB): libs" >> Makevars.win
 
-MAKER=`"${rscript}" -e "x=normalizePath(Sys.which('make'), winslash = '\\\\'); cat(x)"`
-echo "libs: ; mkdir -p libs; cd antb && ls && \"${MAKER}\" -j 4 && cd ANTS-build && ls && \"${MAKER}\" all install && rm -rf ${R_PACKAGE_DIR}/libs/bin && cd ../../" >> Makevars.win
+echo 'libs:' >> Makevars.win
+echo '	mkdir -p libs' >> Makevars.win
+echo '	cd antb && ls' >> Makevars.win
+echo '	cd antb && cat Makefile' >> Makevars.win
+echo '	cd antb && make -j 4' >> Makevars.win
+echo '	cd antb && cd ANTS-build && ls' >> Makevars.win
+echo '	cd antb && cd ANTS-build && make all install' >> Makevars.win
+echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
+echo '	cd ../../' >> Makevars.win
 
 echo "cleaner: ; cd ../libs/bin && rm -f antsRegistration antsApplyTransforms antsMotionCorr \
 antsAffineInitializer antsApplyTransformsToPoints LabelGeometryMeasures \
@@ -168,18 +175,35 @@ for (f in files) {
 
 cd ./antb
 
-cmaker=`"${rscript}" -e "x=Sys.which('cmake'); cat(x)"`
-if [ -z "${cmaker}" ]; then
+cmake_real=`"${rscript}" -e "x=Sys.which('cmake'); if (nzchar(x)) cat(normalizePath(x, winslash='\\\\', mustWork=FALSE))"`
+if [ -z "${cmake_real}" ]; then
     res=`"${rscript}" -e "cat(('cmaker' %in% installed.packages())*1)"`
     if [ $res -eq 0 ]; then
         git clone https://github.com/stnava/cmaker
         R CMD INSTALL cmaker
         rm -rf cmaker
     fi
-    cmaker=`"${rscript}" -e "x=cmaker::cmake();"`
-else
-    cmaker="cmake.exe"
+    cmake_real=`"${rscript}" -e "x=cmaker::cmake(); cat(normalizePath(x, winslash='\\\\', mustWork=FALSE))"`
 fi
+
+antbdir=`"${rscript}" -e 'cat(normalizePath(".", winslash="\\", mustWork=FALSE))'`
+cmakewrap="${antbdir}\\cmake.cmd"
+cpackwrap="${antbdir}\\cpack.cmd"
+ctestwrap="${antbdir}\\ctest.cmd"
+cat > "${cmakewrap}" <<EOF
+@echo off
+"${cmake_real}" %*
+EOF
+cat > "${cpackwrap}" <<EOF
+@echo off
+"${cmake_real%cmake.exe}cpack.exe" %*
+EOF
+cat > "${ctestwrap}" <<EOF
+@echo off
+"${cmake_real%cmake.exe}ctest.exe" %*
+EOF
+
+cmaker="${cmakewrap}"
 
 echo ${cmaker}
 
@@ -199,6 +223,8 @@ echo ${cmaker}
     -DCMAKE_NEED_RESPONSE=1 \
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
     -DCOPY_SCRIPT_FILES_TO_BIN_DIR=OFF \
+    -DCMAKE_CPACK_COMMAND:FILEPATH="${cpackwrap}" \
+    -DCMAKE_CTEST_COMMAND:FILEPATH="${ctestwrap}" \
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="../ants/lib/" \
     -DCMAKE_INSTALL_PREFIX:PATH="${R_PACKAGE_DIR}/libs/" \
     -DCMAKE_BUILD_TYPE:STRING="${CMAKE_BUILD_TYPE}" \
