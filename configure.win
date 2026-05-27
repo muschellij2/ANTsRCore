@@ -33,7 +33,7 @@ PKG_CPPFLAGS="${PKG_CPPFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
 ITKRCMAKE=`"${rscript}" -e 'a<-ITKR:::itkIncludes(); cat(a)'`
 ITKRLIB=`"${rscript}" -e 'a<-ITKR:::itkLibs(); cat(a)'`
 compflags=`"${rscript}" -e 'a<-ITKR:::itkCompileFlags(); cat(a)'`
-ITKDIR=`"${rscript}" -e 'a<-normalizePath(ITKR:::itkDir(), winslash="/", mustWork=FALSE); cat(a)'`
+ITKDIR=`"${rscript}" -e 'a<-ITKR:::itkDir(); if (length(a) && nzchar(a)) cat(normalizePath(a, winslash="/", mustWork=FALSE)) else cat("")'`
 ITKTAG=`"${rscript}" -e 'env = asNamespace("ITKR"); if ("itkTag" %in% names(env)) cat(ITKR::itkTag()) else cat("")'`
 
 CMAKE_BUILD_TYPE=Release
@@ -176,7 +176,7 @@ for (f in files) {
 
 cd ./antb
 
-cmake_real=`"${rscript}" -e "x=Sys.which('cmake'); if (nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE))"`
+cmake_real=`"${rscript}" -e "x=Sys.which('cmake'); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else cat('')"`
 if [ -z "${cmake_real}" ]; then
     res=`"${rscript}" -e "cat(('cmaker' %in% installed.packages())*1)"`
     if [ $res -eq 0 ]; then
@@ -184,7 +184,7 @@ if [ -z "${cmake_real}" ]; then
         R CMD INSTALL cmaker
         rm -rf cmaker
     fi
-    cmake_real=`"${rscript}" -e "x=cmaker::cmake(); cat(normalizePath(x, winslash='/', mustWork=FALSE))"`
+    cmake_real=`"${rscript}" -e "x=cmaker::cmake(); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else cat('')"`
 fi
 
 antbdir=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
