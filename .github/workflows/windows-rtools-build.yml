@@ -55,9 +55,9 @@ jobs:
           print(paste0("pkgdir is ", pkgdir))
           print(list.files(pkgdir))
           ver = read.dcf(desc, "Version")[,1]
-          print(paste0("fname, ", fname))
           tdir = getwd()
           fname = file.path(tdir, paste0("ITKR_", ver, ".zip"))
+          print(paste0("fname, ", fname))
           setwd(pkgdir)
           zip(fname, files = list.files(".", recursive = TRUE, full.names = TRUE))
           setwd(tdir)
