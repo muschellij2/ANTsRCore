@@ -43,7 +43,7 @@ jobs:
           print(getOption("unzip"))
           unzip(dest, exdir = unpack)
           print("unpack")
-          print(list.files(unpack, recursive = TRUE))
+          # print(list.files(unpack, recursive = TRUE))
 
           desc <- list.files(unpack, pattern = "^DESCRIPTION$", recursive = TRUE, full.names = TRUE)[1]
           if (is.na(desc) || !nzchar(desc)) {
