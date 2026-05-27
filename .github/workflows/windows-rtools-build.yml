@@ -33,7 +33,7 @@ jobs:
         run: |
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
           url <- sprintf("https://github.com/muschellij2/ITKR/releases/latest/download/%s", asset)
-          dest <- file.path(tempdir(), "ITKR.zip")
+          dest <- file.path(tempdir(), "ITKR_0.6.0.2.zip")
           unpack <- file.path(tempdir(), "ITKR")
 
           unlink(unpack, recursive = TRUE, force = TRUE)
@@ -54,7 +54,11 @@ jobs:
           pkgdir <- dirname(desc)
           print(paste0("pkgdir is ", pkgdir))
           print(list.files(pkgdir))
-          install.packages(pkgdir, repos = NULL, type = "win.binary")
+          ver = read.dcf(desc, "Version")[,1]
+          fname = paste0("ITKR_", ver, ".zip")
+          print(paste0("fname, ", fname))
+          zip(fname, files = list.files(pkgdir, recursive = TRUE, full.names = TRUE))
+          install.packages(fname, repos = NULL, type = "win.binary")
 
       - name: Remove ITKR remote for Windows binary build
         shell: Rscript {0}
