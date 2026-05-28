@@ -80,9 +80,11 @@ echo 'libs:' >> Makevars.win
 echo '	mkdir -p libs' >> Makevars.win
 echo '	ls -la antb || true' >> Makevars.win
 echo '	ls -la .' >> Makevars.win
-echo '	make -C antb -j 4 || true' >> Makevars.win
+echo '	cd antb && (make -j 2 || true)' >> Makevars.win
+echo '	cd antb && (make -j 2 all || true)' >> Makevars.win
 echo '	ls -la antb/ANTS-build' >> Makevars.win
-echo '	make -C antb/ANTS-build install' >> Makevars.win
+echo '	cd antb/ANTS-build && (make install || true)' >> Makevars.win
+echo '	cd antb/ANTS-build && (make all install || true)' >> Makevars.win
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
 
@@ -173,7 +175,6 @@ for (f in files) {
 }
 '
 
-cd ./antb
 
 cmake_real=`"${rscript}" -e "x=Sys.which('cmake'); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else cat('')"`
 if [ -z "${cmake_real}" ]; then
@@ -186,6 +187,8 @@ if [ -z "${cmake_real}" ]; then
     cmake_real=`"${rscript}" -e "x=cmaker::cmake(); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else cat('')"`
 fi
 
+cd ./antb
+
 antbdir=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
 cmakewrap="${antbdir}/cmake.exe"
 cpackwrap="${antbdir}/cpack.exe"
@@ -194,7 +197,7 @@ cp -f "${cmake_real}" "${cmakewrap}"
 cp -f "${cmake_real%cmake.exe}cpack.exe" "${cpackwrap}"
 cp -f "${cmake_real%cmake.exe}ctest.exe" "${ctestwrap}"
 
-cd ../
+
 
 cmaker="${cmakewrap}"
 
