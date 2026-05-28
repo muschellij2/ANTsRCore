@@ -78,8 +78,9 @@ echo "\$(SHLIB): libs" >> Makevars.win
 
 echo 'libs:' >> Makevars.win
 echo '	mkdir -p libs' >> Makevars.win
-echo '	ls -la antb' >> Makevars.win
-echo '	make -C antb -j 4' >> Makevars.win
+echo '	ls -la antb || true' >> Makevars.win
+echo '	ls -la .' >> Makevars.win
+echo '	make -C antb -j 4 || true' >> Makevars.win
 echo '	ls -la antb/ANTS-build' >> Makevars.win
 echo '	make -C antb/ANTS-build install' >> Makevars.win
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
@@ -192,6 +193,8 @@ ctestwrap="${antbdir}/ctest.exe"
 cp -f "${cmake_real}" "${cmakewrap}"
 cp -f "${cmake_real%cmake.exe}cpack.exe" "${cpackwrap}"
 cp -f "${cmake_real%cmake.exe}ctest.exe" "${ctestwrap}"
+
+cd ../
 
 cmaker="${cmakewrap}"
 
