@@ -78,13 +78,11 @@ echo "\$(SHLIB): libs" >> Makevars.win
 
 echo 'libs:' >> Makevars.win
 echo '	mkdir -p libs' >> Makevars.win
-echo '	ls -la antb || true' >> Makevars.win
+echo '	ls -la antb' >> Makevars.win
 echo '	ls -la .' >> Makevars.win
-echo '	cd antb && (make -j 2 || true)' >> Makevars.win
-echo '	cd antb && (make -j 2 all || true)' >> Makevars.win
+echo '	make -C antb -j 2' >> Makevars.win
 echo '	ls -la antb/ANTS-build' >> Makevars.win
-echo '	cd antb/ANTS-build && (make install || true)' >> Makevars.win
-echo '	cd antb/ANTS-build && (make all install || true)' >> Makevars.win
+echo '	make -C antb/ANTS-build install' >> Makevars.win
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
 
