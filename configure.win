@@ -190,14 +190,21 @@ fi
 cd ./antb
 
 antbdir=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
-cmakewrap="${antbdir}/cmake.exe"
-cpackwrap="${antbdir}/cpack.exe"
-ctestwrap="${antbdir}/ctest.exe"
-cp -f "${cmake_real}" "${cmakewrap}"
-cp -f "${cmake_real%cmake.exe}cpack.exe" "${cpackwrap}"
-cp -f "${cmake_real%cmake.exe}ctest.exe" "${ctestwrap}"
-
-
+cmakewrap="${antbdir}/cmake.cmd"
+cpackwrap="${antbdir}/cpack.cmd"
+ctestwrap="${antbdir}/ctest.cmd"
+cat > "${cmakewrap}" <<EOF
+@echo off
+"${cmake_real}" %*
+EOF
+cat > "${cpackwrap}" <<EOF
+@echo off
+"${cmake_real%cmake.exe}cpack.exe" %*
+EOF
+cat > "${ctestwrap}" <<EOF
+@echo off
+"${cmake_real%cmake.exe}ctest.exe" %*
+EOF
 
 cmaker="${cmakewrap}"
 
@@ -225,6 +232,12 @@ echo ${cmaker}
     -DCMAKE_INSTALL_PREFIX:PATH="${R_PACKAGE_DIR}/libs/" \
     -DCMAKE_BUILD_TYPE:STRING="${CMAKE_BUILD_TYPE}" \
     ../ants
+
+if [ ! -f Makefile ]; then
+    ls -la
+    echo "CMake did not generate antb/Makefile"
+    exit 1
+fi
 
 cd ../
 # needed for warning
