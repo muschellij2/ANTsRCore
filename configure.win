@@ -53,6 +53,8 @@ echo "PKG_CPPFLAGS =${PKG_CPPFLAGS} -Wa,-mbig-obj -I\${ITK} -I\${PWD} -I\${myant
 
 echo "CXX_STD=${CXX_STD}" >> Makevars.win
 echo "SHLIB_CXXLD=${CMAKE_EXE_LINKER_FLAGS}" >> Makevars.win
+echo "CFLAGS=${CFLAGS} -fvisibility=hidden" >> Makevars.win
+echo "CXXFLAGS=${CXXFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden" >> Makevars.win
 echo "MAKEBIN=${MAKEBIN}" >> Makevars.win
 echo "myantslib=\${PWD}/antb/lib/" >> Makevars.win
 echo "antsexdir=\${PWD}/antb/ANTS-build/Examples/" >> Makevars.win
@@ -72,7 +74,7 @@ libants="${libants} -ll_KellyKapowski -ll_LabelClustersUniquely -ll_LabelGeometr
 libants="${libants} -ll_N3BiasFieldCorrection -ll_N4BiasFieldCorrection -ll_ResampleImage "
 libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 
-echo "PKG_LIBS=${PKG_LIBS} -Wl,--start-group ${libitk} ${libants} -Wl,--end-group ${ADD_PKG_LIBS}" >> Makevars.win
+echo "PKG_LIBS=${PKG_LIBS} -Wl,--exclude-libs,ALL -Wl,--start-group ${libitk} ${libants} -Wl,--end-group ${ADD_PKG_LIBS}" >> Makevars.win
 
 echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win

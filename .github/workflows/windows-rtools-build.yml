@@ -2,6 +2,12 @@ name: Windows Rtools build
 
 on:
   workflow_dispatch:
+    inputs:
+      debug_session:
+        description: "Open an interactive tmate shell before the build"
+        required: false
+        default: false
+        type: boolean
   pull_request:
   push:
     branches: [main, master]
@@ -97,6 +103,10 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+
+      - name: Open debug session
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_session }}
+        uses: mxschmitt/action-tmate@v3
 
       - name: Build ANTsRCore
         shell: cmd
