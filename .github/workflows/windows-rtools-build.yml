@@ -121,6 +121,19 @@ jobs:
           }
           $matches = $matches | Sort-Object -Unique
 
+          $debugFiles = @(
+            Join-Path $env:GITHUB_WORKSPACE 'src\Makevars.win'
+            Join-Path $env:GITHUB_WORKSPACE 'src\Makevars'
+            Join-Path $env:GITHUB_WORKSPACE 'src\antb\Makefile'
+            Join-Path $env:GITHUB_WORKSPACE 'src\antb\ANTS-build\Makefile'
+            Join-Path $env:GITHUB_WORKSPACE 'src\antb\ANTS-prefix\tmp\ANTS-cfgcmd.txt'
+          )
+          foreach ($file in $debugFiles) {
+            if (Test-Path $file) {
+              Copy-Item -Path $file -Destination $staging -Force
+            }
+          }
+
           if (-not $matches) {
             Write-Warning "No antb build directories found to collect."
             exit 0

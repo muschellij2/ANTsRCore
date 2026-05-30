@@ -25,7 +25,7 @@ CXX=`"${rexe}" CMD config CXX`
 JTHREADS=1
 
 # Windows-specific linker flags that the package needs on Rtools.
-ADD_PKG_LIBS="-lws2_32 -lgdi32 -mwindows -msse4.1 -mssse3"
+ADD_PKG_LIBS="-lws2_32 -lpsapi -lgdi32 -mwindows -msse4.1 -mssse3"
 TRY_LINKER_FLAGS="${ADD_PKG_LIBS} -Wl,--allow-multiple-definition -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc -Wa,-mbig-obj"
 DLLFLAGS="${DLLFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
 PKG_CPPFLAGS="${PKG_CPPFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
@@ -72,7 +72,7 @@ libants="${libants} -ll_KellyKapowski -ll_LabelClustersUniquely -ll_LabelGeometr
 libants="${libants} -ll_N3BiasFieldCorrection -ll_N4BiasFieldCorrection -ll_ResampleImage "
 libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 
-echo "PKG_LIBS=${PKG_LIBS} ${ADD_PKG_LIBS} ${libitk} ${libants} ${libitk} ${libants} " >> Makevars.win
+echo "PKG_LIBS=${PKG_LIBS} ${ADD_PKG_LIBS} -Wl,--start-group ${libitk} ${libants} -Wl,--end-group" >> Makevars.win
 
 echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win
@@ -82,10 +82,10 @@ echo 'libs:' >> Makevars.win
 echo '	mkdir -p libs' >> Makevars.win
 echo '	ls -la antb' >> Makevars.win
 echo '	ls -la .' >> Makevars.win
-echo '	$(MAKEBIN) -C antb -j 4' >> Makevars.win
+echo '	$(MAKEBIN) -C antb -j 4 VERBOSE=1' >> Makevars.win
 echo '	ls -la antb/ANTS-build' >> Makevars.win
 echo '	test -f antb/ANTS-build/Makefile' >> Makevars.win
-echo '	$(MAKEBIN) -C antb/ANTS-build install' >> Makevars.win
+echo '	$(MAKEBIN) -C antb/ANTS-build install VERBOSE=1' >> Makevars.win
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
 
@@ -248,6 +248,7 @@ echo ${cmaker}
     -DCMAKE_NEED_RESPONSE=1 \
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
     -DCOPY_SCRIPT_FILES_TO_BIN_DIR=OFF \
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
     -DCMAKE_CPACK_COMMAND:FILEPATH="${cpackwrap}" \
     -DCMAKE_CTEST_COMMAND:FILEPATH="${ctestwrap}" \
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="../ants/lib/" \
