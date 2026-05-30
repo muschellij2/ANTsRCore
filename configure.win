@@ -40,6 +40,7 @@ CMAKE_BUILD_TYPE=Release
 
 cd ./src
 PWD=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
+MAKEBIN=`"${rscript}" -e "x=Sys.which('mingw32-make'); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else { y=Sys.which('make'); if (length(y) && nzchar(y)) cat(normalizePath(y, winslash='/', mustWork=FALSE)) else cat('make') }"`
 
 # platform-specific Makevars
 echo "PWD=${PWD}" > Makevars.win
@@ -52,6 +53,7 @@ echo "PKG_CPPFLAGS =${PKG_CPPFLAGS} -Wa,-mbig-obj -I\${ITK} -I\${PWD} -I\${myant
 
 echo "CXX_STD=${CXX_STD}" >> Makevars.win
 echo "SHLIB_CXXLD=${CMAKE_EXE_LINKER_FLAGS}" >> Makevars.win
+echo "MAKEBIN=${MAKEBIN}" >> Makevars.win
 echo "myantslib=\${PWD}/antb/lib/" >> Makevars.win
 echo "antsexdir=\${PWD}/antb/ANTS-build/Examples/" >> Makevars.win
 
@@ -80,9 +82,10 @@ echo 'libs:' >> Makevars.win
 echo '	mkdir -p libs' >> Makevars.win
 echo '	ls -la antb' >> Makevars.win
 echo '	ls -la .' >> Makevars.win
-echo '	make -C antb -j 2' >> Makevars.win
+echo '	$(MAKEBIN) -C antb -j 4' >> Makevars.win
 echo '	ls -la antb/ANTS-build' >> Makevars.win
-echo '	make -C antb/ANTS-build install' >> Makevars.win
+echo '	test -f antb/ANTS-build/Makefile' >> Makevars.win
+echo '	$(MAKEBIN) -C antb/ANTS-build install' >> Makevars.win
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
 
