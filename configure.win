@@ -140,6 +140,20 @@ if [ -a "./CMake/ITKSetStandardCompilerFlags.cmake" ]; then
     "${rscript}" -e "${str}"
 fi
 
+# ANTs' CCache.cmake unconditionally generates Unix shell launcher scripts
+# when ccache is on PATH. On Windows those launchers end up in the generated
+# Makefiles as launch-cxx/launch-c, which cmd.exe cannot execute. Disable the
+# CCache helper entirely for the Windows build so CMake emits direct compiler
+# invocations instead of shell wrapper scripts.
+if [ -a "./CMake/CCache.cmake" ]; then
+    echo "disabling ANTs CCache.cmake on Windows"
+    str='writeLines(c("if(WIN32)",'
+    str=${str}'"  message(STATUS \"Not using CCache on Windows\")",'
+    str=${str}'"  return()",'
+    str=${str}'"endif()"), "./CMake/CCache.cmake")'
+    "${rscript}" -e "${str}"
+fi
+
 cd ../
 mkdir -p antb
 cp ../inst/include/antscore.h ./ants/Examples/include/ants.h
