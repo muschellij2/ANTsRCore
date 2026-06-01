@@ -125,6 +125,17 @@ jobs:
             Copy-Item -Path $env:GITHUB_WORKSPACE -Destination $workspaceSnapshot -Recurse -Force
           }
 
+          $lockRoots = @(
+            Join-Path $env:RUNNER_TEMP 'Library\00LOCK-ANTsRCore'
+            'D:\a\_temp\Library\00LOCK-ANTsRCore'
+          )
+          foreach ($lockRoot in $lockRoots) {
+            if (Test-Path $lockRoot) {
+              $target = Join-Path $staging 'lock'
+              Copy-Item -Path $lockRoot -Destination $target -Recurse -Force
+            }
+          }
+
           $roots = @($env:GITHUB_WORKSPACE, $env:RUNNER_TEMP, 'D:\a')
           $matches = @()
           foreach ($root in $roots) {
