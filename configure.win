@@ -27,9 +27,6 @@ JTHREADS=1
 # Windows-specific linker flags that the package needs on Rtools.
 ADD_PKG_LIBS="-lws2_32 -lpsapi -lrpcrt4 -lgdi32 -mwindows -msse4.1 -mssse3"
 TRY_LINKER_FLAGS="${ADD_PKG_LIBS} -Wl,--allow-multiple-definition -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc -Wl,--exclude-libs,ALL -Wa,-mbig-obj"
-DLLFLAGS="${DLLFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
-PKG_CPPFLAGS="${PKG_CPPFLAGS} ${CMAKE_EXE_LINKER_FLAGS}"
-
 ITKRCMAKE=`"${rscript}" -e 'a<-ITKR:::itkIncludes(); cat(a)'`
 ITKRLIB=`"${rscript}" -e 'a<-ITKR:::itkLibs(); cat(a)'`
 compflags=`"${rscript}" -e 'a<-ITKR:::itkCompileFlags(); cat(a)'`
