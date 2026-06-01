@@ -41,6 +41,12 @@ CMAKE_BUILD_TYPE=Release
 cd ./src
 PWD=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
 MAKEBIN=`"${rscript}" -e "x=Sys.which('mingw32-make'); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else { y=Sys.which('make'); if (length(y) && nzchar(y)) cat(normalizePath(y, winslash='/', mustWork=FALSE)) else cat('make') }"`
+linkwrap="${PWD}/linkwrap.cmd"
+cat > "${linkwrap}" <<EOF
+@echo off
+if exist tmp.def type tmp.def
+"${CXX}" %*
+EOF
 
 # platform-specific Makevars
 echo "PWD=${PWD}" > Makevars.win
@@ -52,7 +58,7 @@ echo "PKG_CPPFLAGS =${PKG_CPPFLAGS} -Wa,-mbig-obj -I\${ITK} -I\${PWD} -I\${myant
   -I\${myantssource}/Tensor/ " >> Makevars.win
 
 echo "CXX_STD=${CXX_STD}" >> Makevars.win
-echo "SHLIB_CXXLD=${CMAKE_EXE_LINKER_FLAGS}" >> Makevars.win
+echo "SHLIB_CXXLD=${linkwrap}" >> Makevars.win
 echo "PKG_CFLAGS =${PKG_CFLAGS} -fvisibility=hidden" >> Makevars.win
 echo "PKG_CXXFLAGS =${PKG_CXXFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden" >> Makevars.win
 echo "MAKEBIN=${MAKEBIN}" >> Makevars.win
