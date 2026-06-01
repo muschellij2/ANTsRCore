@@ -137,6 +137,7 @@ jobs:
             Join-Path $env:GITHUB_WORKSPACE 'src\antb\Makefile'
             Join-Path $env:GITHUB_WORKSPACE 'src\antb\ANTS-build\Makefile'
             Join-Path $env:GITHUB_WORKSPACE 'src\antb\ANTS-prefix\tmp\ANTS-cfgcmd.txt'
+            Join-Path $env:GITHUB_WORKSPACE 'src\tmp.def'
           )
           foreach ($file in $debugFiles) {
             if (Test-Path $file) {
