@@ -120,6 +120,11 @@ jobs:
           $staging = Join-Path $env:RUNNER_TEMP 'antb-debug'
           New-Item -ItemType Directory -Force -Path $staging | Out-Null
 
+          $workspaceSnapshot = Join-Path $staging 'workspace'
+          if (Test-Path $env:GITHUB_WORKSPACE) {
+            Copy-Item -Path $env:GITHUB_WORKSPACE -Destination $workspaceSnapshot -Recurse -Force
+          }
+
           $roots = @($env:GITHUB_WORKSPACE, $env:RUNNER_TEMP, 'D:\a')
           $matches = @()
           foreach ($root in $roots) {
