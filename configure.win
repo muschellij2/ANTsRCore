@@ -39,12 +39,13 @@ cd ./src
 PWD=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
 MAKEBIN=`"${rscript}" -e "x=Sys.which('mingw32-make'); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else { y=Sys.which('make'); if (length(y) && nzchar(y)) cat(normalizePath(y, winslash='/', mustWork=FALSE)) else cat('make') }"`
 linkwrap="${PWD}/linkwrap.cmd"
+linker_exe=`"${rscript}" -e 'x <- Sys.which("g++"); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash="/", mustWork=FALSE)) else cat("g++")'`
 cat > "${linkwrap}" <<EOF
 @echo off
 echo CWD=%CD%
 if exist tmp.def type tmp.def
 for /r %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
-"${CXX}" %*
+"${linker_exe}" %*
 EOF
 
 # platform-specific Makevars
