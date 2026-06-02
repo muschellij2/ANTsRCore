@@ -48,6 +48,8 @@ echo CWD=%CD%
 echo LINKER=${linker_exe}
 if exist tmp.def type tmp.def
 for /r %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
+for /r .. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
+for /r ../.. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
 call "${linker_exe}" %*
 EOF
 cat > "${gppwrap}" <<EOF
@@ -56,6 +58,8 @@ echo CWD=%CD%
 echo LINKER=${linker_bin}
 if exist tmp.def type tmp.def
 for /r %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
+for /r .. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
+for /r ../.. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
 call "${linker_bin}" %*
 EOF
 
@@ -72,6 +76,7 @@ echo "CXX_STD=${CXX_STD}" >> Makevars.win
 echo "SHLIB_LD=${linkwrap}" >> Makevars.win
 echo "SHLIB_CXXLD=${linkwrap}" >> Makevars.win
 echo "CXX=${gppwrap}" >> Makevars.win
+echo "PATH=${PWD};\${PATH}" >> Makevars.win
 echo "PKG_CFLAGS =${PKG_CFLAGS} -fvisibility=hidden" >> Makevars.win
 echo "PKG_CXXFLAGS =${PKG_CXXFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden" >> Makevars.win
 echo "MAKEBIN=${MAKEBIN}" >> Makevars.win
