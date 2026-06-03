@@ -153,6 +153,12 @@ jobs:
             Join-Path $env:GITHUB_WORKSPACE 'src\antb\Makefile'
             Join-Path $env:GITHUB_WORKSPACE 'src\antb\ANTS-build\Makefile'
             Join-Path $env:GITHUB_WORKSPACE 'src\antb\ANTS-prefix\tmp\ANTS-cfgcmd.txt'
+            Join-Path $env:GITHUB_WORKSPACE 'src\ANTsRCore-link-tmp.def'
+            Join-Path $env:GITHUB_WORKSPACE 'src\ANTsRCore-gpp-tmp.def'
+            Join-Path $env:RUNNER_TEMP 'ANTsRCore-link-tmp.def'
+            Join-Path $env:RUNNER_TEMP 'ANTsRCore-gpp-tmp.def'
+            Join-Path $env:GITHUB_WORKSPACE 'src\linkwrap.cmd'
+            Join-Path $env:GITHUB_WORKSPACE 'src\g++.cmd'            
           )
           foreach ($file in $debugFiles) {
             if (Test-Path $file) {
