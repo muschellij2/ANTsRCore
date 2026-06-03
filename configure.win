@@ -43,23 +43,52 @@ gppwrap="${PWD}/g++.cmd"
 linker_exe=`"${rscript}" -e 'x <- Sys.which("g++"); if (length(x) && nzchar(x)) { x <- normalizePath(x, winslash="/", mustWork=FALSE); x <- sub("[[:space:]].*$", "", x); cat(x) } else cat("g++")'`
 linker_bin="${linker_exe%/g++.exe}/g++.exe"
 cat > "${linkwrap}" <<EOF
-@echo off
+@echo on
+echo ===== ANTsRCore linkwrap reached =====
 echo CWD=%CD%
 echo LINKER=${linker_exe}
-if exist tmp.def type tmp.def
-for /r %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
-for /r .. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
-for /r ../.. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
+echo ARGS=%*
+
+for %%A in (%*) do (
+  echo ARG=%%~A
+  if /I "%%~xA"==".def" (
+    echo FOUND_DEF_ARG=%%~fA
+    if exist "%%~fA" (
+      for %%Z in ("%%~fA") do echo DEF_BYTES=%%~zZ
+      copy /Y "%%~fA" "%CD%\\ANTsRCore-link-tmp.def"
+      if not "%RUNNER_TEMP%"=="" copy /Y "%%~fA" "%RUNNER_TEMP%\\ANTsRCore-link-tmp.def"
+      powershell -NoProfile -ExecutionPolicy Bypass -Command "$p='%%~fA'; $x=Get-Content -LiteralPath $p; Write-Host ('DEF_LINES=' + $x.Count); Write-Host '--- DEF HEAD ---'; $x | Select-Object -First 200; Write-Host '--- DEF TAIL ---'; $x | Select-Object -Last 100"
+    ) else (
+      echo DEF_ARG_NOT_FOUND=%%~fA
+    )
+  )
+)
+
 call "${linker_exe}" %*
 EOF
+
 cat > "${gppwrap}" <<EOF
-@echo off
+@echo on
+echo ===== ANTsRCore gppwrap reached =====
 echo CWD=%CD%
 echo LINKER=${linker_bin}
-if exist tmp.def type tmp.def
-for /r %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
-for /r .. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
-for /r ../.. %%F in (tmp.def) do if exist "%%~fF" type "%%~fF"
+echo ARGS=%*
+
+for %%A in (%*) do (
+  echo ARG=%%~A
+  if /I "%%~xA"==".def" (
+    echo FOUND_DEF_ARG=%%~fA
+    if exist "%%~fA" (
+      for %%Z in ("%%~fA") do echo DEF_BYTES=%%~zZ
+      copy /Y "%%~fA" "%CD%\\ANTsRCore-gpp-tmp.def"
+      if not "%RUNNER_TEMP%"=="" copy /Y "%%~fA" "%RUNNER_TEMP%\\ANTsRCore-gpp-tmp.def"
+      powershell -NoProfile -ExecutionPolicy Bypass -Command "$p='%%~fA'; $x=Get-Content -LiteralPath $p; Write-Host ('DEF_LINES=' + $x.Count); Write-Host '--- DEF HEAD ---'; $x | Select-Object -First 200; Write-Host '--- DEF TAIL ---'; $x | Select-Object -Last 100"
+    ) else (
+      echo DEF_ARG_NOT_FOUND=%%~fA
+    )
+  )
+)
+
 call "${linker_bin}" %*
 EOF
 
