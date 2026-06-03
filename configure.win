@@ -75,7 +75,9 @@ echo "PKG_CPPFLAGS =${PKG_CPPFLAGS} -Wa,-mbig-obj -I\${ITK} -I\${PWD} -I\${myant
 echo "CXX_STD=${CXX_STD}" >> Makevars.win
 echo "SHLIB_LD=${linkwrap}" >> Makevars.win
 echo "SHLIB_CXXLD=${linkwrap}" >> Makevars.win
+echo "SHLIB_CXX17LD=${linkwrap}" >> Makevars.win
 echo "CXX=${gppwrap}" >> Makevars.win
+echo "CXX17=${gppwrap}" >> Makevars.win
 echo "PKG_CFLAGS =${PKG_CFLAGS} -fvisibility=hidden" >> Makevars.win
 echo "PKG_CXXFLAGS =${PKG_CXXFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden" >> Makevars.win
 echo "MAKEBIN=${MAKEBIN}" >> Makevars.win
@@ -97,7 +99,7 @@ libants="${libants} -ll_KellyKapowski -ll_LabelClustersUniquely -ll_LabelGeometr
 libants="${libants} -ll_N3BiasFieldCorrection -ll_N4BiasFieldCorrection -ll_ResampleImage "
 libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 
-echo "PKG_LIBS=${PKG_LIBS} -Wl,--exclude-all-symbols -Wl,--exclude-libs,ALL -Wl,--start-group ${libitk} ${libants} -Wl,--end-group ${ADD_PKG_LIBS}" >> Makevars.win
+echo "PKG_LIBS=${PKG_LIBS} -Wl,--exclude-all-symbols -Wl,--exclude-libs,ALL -Wl,--export=R_init_ANTsRCore -Wl,--start-group ${libitk} ${libants} -Wl,--end-group ${ADD_PKG_LIBS}" >> Makevars.win
 echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win
 echo "\$(SHLIB): libs" >> Makevars.win
