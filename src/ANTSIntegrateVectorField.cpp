@@ -25,6 +25,7 @@
 #include "itkVectorCurvatureAnisotropicDiffusionImageFilter.h"
 #include "itkLaplacianRecursiveGaussianImageFilter.h"
 #include "itkGradientRecursiveGaussianImageFilter.h"
+#include "itkImageFileWriter.h"
 
 #include "ReadWriteData.h"
 
@@ -84,8 +85,12 @@ void vectorIntegrationHelper(
   integrator->SetUpperTimeBound( finishtime );
   integrator->SetNumberOfIntegrationSteps( static_cast<unsigned int>( std::round( 1.0 / dT ) ) );
   integrator->Update();
-//  r_deformation = integrator->GetOutput();
-  ANTs::WriteImage<DisplacementFieldType>( integrator->GetOutput(), r_deformation.c_str() );
+
+  using WriterType = itk::ImageFileWriter<DisplacementFieldType>;
+  typename WriterType::Pointer writer = WriterType::New();
+  writer->SetFileName( r_deformation.c_str() );
+  writer->SetInput( integrator->GetOutput() );
+  writer->Update();
   return;
 }
 

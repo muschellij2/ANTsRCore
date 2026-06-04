@@ -1,0 +1,3 @@
+LIBRARY ANTsRCore
+EXPORTS
+    R_init_ANTsRCore

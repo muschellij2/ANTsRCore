@@ -3,7 +3,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/ANTsX/ANTsRCore/actions/workflows/package-build.yml/badge.svg)](https://github.com/ANTsX/ANTsRCore/actions/workflows/package-build.yml)
-
+[![R-CMD-check](https://github.com/ANTsX/ANTsRCore/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ANTsX/ANTsRCore/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The ANTsRCore package provides Rcpp bindings for the C++ biomedical image processing library [ANTs](https://github.com/ANTsX/ANTs). This package should not be used directly, as it is meant to provide the core functionality for the user-facing [ANTsR](http://stnava.github.io/ANTsR/) package.

@@ -29,7 +29,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sstream>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"

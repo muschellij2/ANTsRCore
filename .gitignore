@@ -425,3 +425,4 @@ inst/include/template_for_executables.cxx.in
 inst/include/TestSuite/*
 test_stuff.R
 ~/.boxr-oauth
+.positai
