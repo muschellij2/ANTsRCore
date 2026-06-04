@@ -42,6 +42,7 @@ jobs:
           use-public-rspm: true
 
       - name: Install ITKR binary
+        if: runner.os == 'Windows'
         shell: Rscript {0}
         run: |
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
