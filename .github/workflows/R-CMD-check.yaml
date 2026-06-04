@@ -15,12 +15,86 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      ITKR_RELEASE_ASSET: ITKR-${{ matrix.r-version }}.zip
     steps:
       - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.r-version }}
+
+      - name: Install ITKR binary
+        shell: Rscript {0}
+        run: |
+          asset <- Sys.getenv("ITKR_RELEASE_ASSET")
+          url <- sprintf("https://github.com/muschellij2/ITKR/releases/latest/download/%s", asset)
+          dest <- file.path(tempdir(), "ITKR_0.6.0.2.zip")
+          unpack <- file.path(tempdir(), "ITKR")
+
+          unlink(unpack, recursive = TRUE, force = TRUE)
+          dir.create(unpack, recursive = TRUE, showWarnings = FALSE)
+
+          download.file(url, dest, mode = "wb", quiet = TRUE)
+          print(getOption("unzip"))
+          unzip(dest, exdir = unpack)
+          print("unpack")
+          # print(list.files(unpack, recursive = TRUE))
+
+          desc <- list.files(unpack, pattern = "^DESCRIPTION$", recursive = TRUE, full.names = TRUE)[1]
+          if (is.na(desc) || !nzchar(desc)) {
+            stop(sprintf("Could not find DESCRIPTION inside %s", asset))
+          }
+          print(paste0("desc", desc))
+          
+          get_description_deps <- function(path = "DESCRIPTION",
+                                 fields = c("Depends", "Imports", "LinkingTo"),
+                                 include_r = FALSE) {
+            dcf <- read.dcf(path)
+          
+            deps <- tools:::.split_dependencies(dcf[1, fields[fields %in% colnames(dcf)]])
+            pkgs <- names(deps)
+          
+            if (!include_r) {
+              pkgs <- setdiff(pkgs, "R")
+            }
+          
+            unique(pkgs)
+          }
+          install.packages(get_description_deps(desc))
+          
+          pkgdir <- dirname(desc)
+          print(paste0("pkgdir is ", pkgdir))
+          print(list.files(pkgdir))
+          ver = read.dcf(desc, "Version")[,1]
+          tdir = getwd()
+          itkr_source = file.path(tdir, paste0("ITKR_", ver, ".zip"))
+          print(paste0("itkr_source, ", itkr_source))
+          setwd(dirname(pkgdir))
+          zip(itkr_source, files = list.files("ITKR/", recursive = TRUE, full.names = TRUE))
+          setwd(tdir)
+          print(paste0("itkr_source, ", itkr_source))
+          install.packages(itkr_source, repos = NULL, type = "win.binary")
+          print("require")
+          print(requireNamespace("ITKR", quietly = FALSE))
+
+          if (!requireNamespace("ITKR", quietly = TRUE)) {
+            stop("ITKR binary is not installed, refusing to edit DESCRIPTION")
+          }
+
+          desc <- "DESCRIPTION"
+          lines <- readLines(desc, warn = FALSE)
+          rem = grepl("^Remotes:\\s*", lines)
+          itkr_source = normalizePath(itkr_source, winslash = "/")
+          lines[rem] <- sub("ANTsX/ITKR", paste0("ITKR=local::", itkr_source), lines[rem])
+          writeLines(lines, desc)
+
+      - uses: r-lib/actions/setup-r-depxendencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check

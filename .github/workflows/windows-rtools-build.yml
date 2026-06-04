@@ -104,10 +104,6 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Open debug session
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_session }}
-        uses: mxschmitt/action-tmate@v3
-
       - name: Build ANTsRCore
         shell: cmd
         run: |
