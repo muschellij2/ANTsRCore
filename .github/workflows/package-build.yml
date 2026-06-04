@@ -30,7 +30,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      ITKR_RELEASE_ASSET: ITKR-${{ matrix.r-version }}.zip
+      ITKR_RELEASE_ASSET: ITKR-release.zip
 
     steps:
       - uses: actions/checkout@v6
