@@ -115,7 +115,7 @@ echo "antsexdir=\${PWD}/antb/ANTS-build/Examples/" >> Makevars.win
 
 str="x = list.files(pattern = 'lib.*.a', path='"
 str="${str}${ITKRLIB}'"
-str="${str}); x = sub('[.]a$', '', x); x = sub('^lib', '', x); x = x[!grepl('^(ITKTestKernel|itktestlib|ITKVNLInstantiation)(-|$)', x)]; cat(paste0('-l', x), sep = ' ')"
+str="${str}); x = sub('[.]a$', '', x); x = sub('^lib', '', x); x = x[!grepl('^(ITKTestKernel|itktestlib|ITKVNLInstantiation|ITKVTK)(-|$)', x)]; cat(paste0('-l', x), sep = ' ')"
 libitk=`"${rscript}" -e "${str}"`
 libitk="-L${ITKRLIB} ${libitk}"
 
