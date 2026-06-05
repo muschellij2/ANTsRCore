@@ -131,6 +131,7 @@ libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 echo "PKG_LIBS=${PKG_LIBS} -Wl,--exclude-all-symbols -Wl,--exclude-libs,ALL -Wl,--start-group ${libitk} ${libants} -Wl,--end-group ${ADD_PKG_LIBS}" >> Makevars.win
 echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win
+echo '	cd .. && sh ./cleanup postbuild' >> Makevars.win
 echo "\$(SHLIB): libs" >> Makevars.win
 
 echo 'libs:' >> Makevars.win
@@ -320,4 +321,3 @@ fi
 cd ../
 # needed for warning
 rm -rf ants/.git
-
