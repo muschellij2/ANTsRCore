@@ -20,12 +20,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
-
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.r-version }}
 
@@ -94,7 +88,7 @@ jobs:
           lines[rem] <- sub("ANTsX/ITKR", paste0("ITKR=local::", itkr_source), lines[rem])
           writeLines(lines, desc)
 
-      - uses: r-lib/actions/setup-r-depxendencies@v2
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
