@@ -3,43 +3,29 @@ name: Release binaries
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
 
 jobs:
-  build-binary:
-    name: ${{ matrix.config.os }} binary
-    runs-on: ${{ matrix.config.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - os: windows-latest
-            r: release
-            shell: cmd
-            binary_glob: ANTsRCore_*.zip
-          - os: macos-latest
-            r: release
-            shell: bash
-            binary_glob: ANTsRCore_*.tgz
+  build-windows:
+    name: Windows binary
+    runs-on: windows-latest
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      ITKR_RELEASE_ASSET: ITKR-${{ matrix.config.r }}.zip
+      ITKR_RELEASE_ASSET: ITKR-release.zip
 
     steps:
       - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.config.r }}
+          r-version: release
           use-public-rspm: true
 
       - name: Install ITKR binary
-        if: runner.os == 'Windows'
         shell: Rscript {0}
         run: |
           asset <- Sys.getenv("ITKR_RELEASE_ASSET")
@@ -59,8 +45,8 @@ jobs:
           }
 
           get_description_deps <- function(path = "DESCRIPTION",
-                                         fields = c("Depends", "Imports", "LinkingTo"),
-                                         include_r = FALSE) {
+                                           fields = c("Depends", "Imports", "LinkingTo"),
+                                           include_r = FALSE) {
             dcf <- read.dcf(path)
             deps <- tools:::.split_dependencies(dcf[1, fields[fields %in% colnames(dcf)]])
             pkgs <- names(deps)
@@ -85,12 +71,11 @@ jobs:
             stop("ITKR binary is not installed, refusing to edit DESCRIPTION")
           }
 
-          desc <- "DESCRIPTION"
-          lines <- readLines(desc, warn = FALSE)
+          lines <- readLines("DESCRIPTION", warn = FALSE)
           rem <- grepl("^Remotes:\\s*", lines)
           itkr_source <- normalizePath(itkr_source, winslash = "/")
           lines[rem] <- sub("ANTsX/ITKR", paste0("ITKR=local::", itkr_source), lines[rem])
-          writeLines(lines, desc)
+          writeLines(lines, "DESCRIPTION")
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -98,30 +83,62 @@ jobs:
           needs: check
 
       - name: Build binary package
-        shell: ${{ matrix.config.shell }}
+        shell: cmd
         run: R CMD INSTALL --build .
 
-      - name: Upload build artifact
+      - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.config.os }}-binary
-          path: ${{ matrix.config.binary_glob }}
+          name: windows-binary
+          path: ANTsRCore_*.zip
+          if-no-files-found: error
+
+  build-macos:
+    name: macOS binary
+    runs-on: macos-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - name: Build binary package
+        shell: bash
+        run: R CMD INSTALL --build .
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-binary
+          path: ANTsRCore_*.tgz
           if-no-files-found: error
 
   release:
     name: Create GitHub release
     runs-on: ubuntu-latest
-    needs: build-binary
+    needs:
+      - build-windows
+      - build-macos
 
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           path: release-assets
+          merge-multiple: true
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            release-assets/**/*.zip
-            release-assets/**/*.tgz
+          files: release-assets/*
