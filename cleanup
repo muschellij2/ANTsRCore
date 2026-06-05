@@ -13,7 +13,7 @@ rm -f -r src/*.gcno
 rm -f -r src/*.gcda
 
 if [ "$mode" != "postbuild" ]; then
-  rm -f -r src/ants src/antb
+  rm -f -r src/antb
   rm -f src/Makevars
 fi
 
