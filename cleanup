@@ -11,11 +11,8 @@ rm -f -r src/*.o src/*.so */*~ *~ src/itks src/itkb
 rm -f -r src/*.o-*
 rm -f -r src/*.gcno
 rm -f -r src/*.gcda
-
-if [ "$mode" != "postbuild" ]; then
-  rm -f -r src/antb
-  rm -f src/Makevars
-fi
+rm -f -r src/antb
+rm -f src/Makevars
 
 cd inst/include
 mv README.md RcppANTsR.h antscore.h RcppANTsR/ ../ && rm -rf * && mv ../README.md ../RcppANTsR.h ../antscore.h ../RcppANTsR ./

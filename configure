@@ -75,7 +75,6 @@ echo "PKG_LIBS=${PKG_LIBS} \${libants} \${libitk} \${libants} \${libitk} \
 echo ".PHONY: all libs cleaner" >> Makevars
 
 echo "all: \$(SHLIB)" >> Makevars
-echo '	cd .. && sh ./cleanup postbuild' >> Makevars
 # echo "all: \$(CHECKER) \$(SHLIB)" >> Makevars
 # echo "\$(CHECKER): ; @echo \"Myantssource is \${myantssource}\" && @echo \"PWD is \${PWD}\" && @echo \"ITK is \${ITK}\"" >> Makevars
 
