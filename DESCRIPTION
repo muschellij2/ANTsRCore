@@ -18,6 +18,5 @@ Suggests: covr, knitr, rmarkdown, testthat
 SystemRequirements: cmake, git, clang, GNU make, v8
 NeedsCompilation: yes
 RoxygenNote: 7.3.1
-VignetteBuilder: knitr
 Encoding: UTF-8
 Remotes: ANTsX/ITKR
