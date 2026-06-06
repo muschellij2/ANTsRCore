@@ -219,6 +219,7 @@ cp -r ants/Tensor/* ../inst/include/
 cp -r ants/ImageRegistration/* ../inst/include/
 cp -r ants/ImageSegmentation/* ../inst/include/
 cp -r ants/Temporary/* ../inst/include
+rm -f ants/CITATION.bib
 
 # ITK 6 requires semicolons after several ITK macro declarations. The ANTs
 # headers copied into inst/include still use the older style, so patch them
