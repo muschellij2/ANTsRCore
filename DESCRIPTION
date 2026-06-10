@@ -1,8 +1,7 @@
 Package: ANTsRCore
 Type: Package
 Title: Core Software Infrastructure for 'ANTsR'
-Version: 0.8.1
-Date: 2024-03-22
+Version: 0.8.2
 Authors@R: c( person(given = "Brian B.", family = "Avants", role = "cre", email = "stnava@gmail.com"), person(given =
               "Benjamin M.", family = "Kandel", role = "aut"), person(given = "Philip A.", family = "Cook", role = "aut"),
               person(given = "Nicholas J.", family = "Tustison", role = "aut"), person(given = "John", family = "Muschelli",
@@ -11,14 +10,12 @@ Description: 'ANTsR' interfaces state of the art image processing with R statist
               C++. This package provides the underlying C++ framework on which 'ANTsR' depends.
 License: Apache License (>= 2.0)
 LazyLoad: yes
-LazyData: true
-Depends: methods, R (>= 2.10)
-LinkingTo: Rcpp, ITKR
-Imports: Rcpp (>= 1.0.12), ITKR (>= 0.5.0), RcppEigen
+Depends: R (>= 3.0.2)
+LinkingTo: Rcpp, ITKR (>= 0.5.0)
+Imports: Rcpp (>= 1.0.12)
 Suggests: covr, knitr, rmarkdown, testthat
 SystemRequirements: cmake, git, clang, GNU make, v8
 NeedsCompilation: yes
-RoxygenNote: 7.3.1
-VignetteBuilder: knitr
 Encoding: UTF-8
 Remotes: ANTsX/ITKR
+Config/roxygen2/version: 8.0.0

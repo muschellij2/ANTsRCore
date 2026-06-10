@@ -95,9 +95,9 @@ antsrtag=`git log --pretty=format:'%H' -n 1`
 if [[ ! -s ants/CMakeLists.txt  ]] ; then
     git clone $antsbranch $antsgit ants
 fi
-if [[ ! -d ../data/ ]] ; then
-  mkdir -p ../data
-fi
+#if [[ ! -d ../data/ ]] ; then
+#  mkdir -p ../data
+#fi
 cd ants
 if [[ -d .git ]]; then
     git checkout master
