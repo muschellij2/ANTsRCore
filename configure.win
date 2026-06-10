@@ -166,7 +166,7 @@ else
     git clone "$antsgit" ants
 fi
 
-mkdir -p ../data
+# mkdir -p ../data
 
 cd ants
 
