@@ -116,6 +116,8 @@ cp -r ants/Tensor/*  ../inst/include/
 cp -r ants/ImageRegistration/* ../inst/include/
 cp -r ants/ImageSegmentation/* ../inst/include/
 cp -r ants/Temporary/* ../inst/include
+rm -f ants/CITATION.bib
+
 cd ./antb
 
 cmake -DITK_DIR:PATH=${ITKDIR} \
