@@ -142,8 +142,6 @@ echo '	ls -la antb/ANTS-build' >> Makevars.win
 echo '	test -f antb/ANTS-build/Makefile' >> Makevars.win
 echo '	$(MAKEBIN) -C antb/ANTS-build install VERBOSE=1' >> Makevars.win
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
-echo "	rm -rf ${R_PACKAGE_DIR}/libs/*.a" >> Makevars.win
-echo "	rm -rf antb/ANTS-build/Examples/*.a" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
 
 echo "cleaner: ; cd libs/bin && rm -f antsRegistration antsApplyTransforms antsMotionCorr \
