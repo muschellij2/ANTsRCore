@@ -129,7 +129,7 @@ libants="${libants} -ll_N3BiasFieldCorrection -ll_N4BiasFieldCorrection -ll_Resa
 libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 
 echo "PKG_LIBS=${PKG_LIBS} -Wl,--exclude-all-symbols -Wl,--exclude-libs,ALL -Wl,--start-group ${libitk} ${libants} -Wl,--end-group ${ADD_PKG_LIBS}" >> Makevars.win
-echo ".PHONY: all libs cleaner acleaner" >> Makevars.win
+echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win
 echo "\$(SHLIB): libs" >> Makevars.win
 
@@ -146,13 +146,11 @@ echo "	rm -rf ${R_PACKAGE_DIR}/libs/*.a" >> Makevars.win
 echo "	rm -rf antb/ANTS-build/Examples/*.a" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
 
-echo "cleaner: ; cd ../libs/bin && rm -f antsRegistration antsApplyTransforms antsMotionCorr \
+echo "cleaner: ; cd libs/bin && rm -f antsRegistration antsApplyTransforms antsMotionCorr \
 antsAffineInitializer antsApplyTransformsToPoints LabelGeometryMeasures \
 antsMotionCorrStats ResampleImage Atropos KellyKapowski DenoiseImage \
 N3BiasFieldCorrection N4BiasFieldCorrection sccan antsJointFusion \
 ThresholdImage LabelClustersUniquely SurfaceBasedSmoothing" >> Makevars
-
-echo "acleaner: ; rm -f ../libs/*.a && rm -f ../antb/ANTS-build/Examples/lib*.a && rm -f antb/ANTS-build/Examples/lib*.a" >> Makevars
 
 # get / set up ANTs code
 # Keep the same upstream ANTs pin as configure; only the Windows fetch/build
