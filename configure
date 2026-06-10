@@ -72,7 +72,7 @@ echo "libitk=\`find ${ITKRLIB} -name \"lib*.a\"\`" >> Makevars
 echo "PKG_LIBS=${PKG_LIBS} \${libants} \${libitk} \${libants} \${libitk} \
     \${libants} \${libitk} \${libants} \${libitk} \${libants} \${libitk}" >> Makevars
 
-echo ".PHONY: all libs cleaner" >> Makevars
+echo ".PHONY: all libs cleaner acleaner" >> Makevars
 
 echo "all: \$(SHLIB)" >> Makevars
 # echo "all: \$(CHECKER) \$(SHLIB)" >> Makevars
@@ -80,13 +80,15 @@ echo "all: \$(SHLIB)" >> Makevars
 
 echo "\$(SHLIB): libs " >> Makevars
 
-echo "libs: ; cd \${PWD}/antb && \$(MAKE) -j 2 &&  cd \${PWD}/antb/ANTS-build && \$(MAKE) all install && rm -rf ${R_PACKAGE_DIR}/libs/bin && rm -rf \${PWD}/antb/ANTS-build/Examples/lib*.a && rm -rf ${R_PACKAGE_DIR}/libs/*.a && cd \${PWD}" >> Makevars
+echo "libs: ; cd \${PWD}/antb && \$(MAKE) -j 2 &&  cd \${PWD}/antb/ANTS-build && \$(MAKE) all install && rm -rf ${R_PACKAGE_DIR}/libs/bin && cd \${PWD}" >> Makevars
 
 echo "cleaner: ; cd libs/bin && rm -f antsRegistration antsApplyTransforms antsMotionCorr \
 antsAffineInitializer antsApplyTransformsToPoints LabelGeometryMeasures \
 antsMotionCorrStats ResampleImage Atropos KellyKapowski DenoiseImage \
 N3BiasFieldCorrection N4BiasFieldCorrection sccan antsJointFusion \
 ThresholdImage LabelClustersUniquely SurfaceBasedSmoothing" >> Makevars
+
+echo "acleaner: ; rm -f libs/*.a && rm -f \${PWD}/antb/ANTS-build/Examples/lib*.a" >> Makevars
 
 # get / set up ANTs code
 antsgit=https://github.com/ANTsX/ANTs.git
