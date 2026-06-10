@@ -15,6 +15,9 @@ rm -f -r src/antb
 rm -f src/Makevars
 rm -f src/ants/CITATION.bib
 rm -f ants/CITATION.bib
+rm -f src/*.a
+rm -f src/antb/ANTS-build/Examples/lib*.a
+rm -f antb/ANTS-build/Examples/lib*.a
 
 cd inst/include
 mv README.md RcppANTsR.h antscore.h RcppANTsR/ ../ && rm -rf * && mv ../README.md ../RcppANTsR.h ../antscore.h ../RcppANTsR ./
