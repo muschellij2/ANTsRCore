@@ -1,6 +1,7 @@
 #include <exception>
 #include <algorithm>
 #include <vector>
+#include "antsrRCheckStreams.h"
 #include "RcppANTsR.h"
 #include <ants.h>
 #include <iostream>
@@ -31,6 +32,8 @@
 #include "itkBSplineInterpolateImageFunction.h"
 #include "itkRIPMMARCImageFilter.h"
 #include "itkMultiScaleLaplacianBlobDetectorImageFilter2.h"
+#undef cout
+#undef cerr
 
 template< class ImageType >
 SEXP blobDetectionHelper(
