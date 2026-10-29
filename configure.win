@@ -38,6 +38,13 @@ CMAKE_BUILD_TYPE=Release
 cd ./src
 PWD=`"${rscript}" -e 'cat(normalizePath(".", winslash="/", mustWork=FALSE))'`
 MAKEBIN=`"${rscript}" -e "x=Sys.which('mingw32-make'); if (length(x) && nzchar(x)) cat(normalizePath(x, winslash='/', mustWork=FALSE)) else { y=Sys.which('make'); if (length(y) && nzchar(y)) cat(normalizePath(y, winslash='/', mustWork=FALSE)) else cat('make') }"`
+# Build ANTs with 2 jobs (CRAN's limit) unless MAKEFLAGS asks for more,
+# e.g. MAKEFLAGS=-j8 R CMD INSTALL ANTsRCore
+make_jobs=`echo " ${MAKEFLAGS}" | sed -n -e 's/.*--jobs[= ]*\([0-9][0-9]*\).*/\1/p' -e 's/.* -*[a-zA-Z]*j *\([0-9][0-9]*\).*/\1/p' | head -n 1`
+if [ -z "${make_jobs}" ] || [ "${make_jobs}" -lt 1 ]; then
+  make_jobs=2
+fi
+echo "building ANTs with ${make_jobs} jobs"
 linkwrap="${PWD}/linkwrap.cmd"
 gppwrap="${PWD}/g++.cmd"
 linker_exe=`"${rscript}" -e 'x <- Sys.which("g++"); if (length(x) && nzchar(x)) { x <- normalizePath(x, winslash="/", mustWork=FALSE); x <- sub("[[:space:]].*$", "", x); cat(x) } else cat("g++")'`
@@ -128,6 +135,8 @@ libants="${libants} -ll_KellyKapowski -ll_LabelClustersUniquely -ll_LabelGeometr
 libants="${libants} -ll_N3BiasFieldCorrection -ll_N4BiasFieldCorrection -ll_ResampleImage "
 libants="${libants} -ll_sccan -ll_SurfaceBasedSmoothing -ll_ThresholdImage "
 
+# Exports come from ANTsRCore-win.def, which only lists R_init_ANTsRCore;
+# R already links the DLL with -s, so it carries no symbol table.
 echo "PKG_LIBS=${PKG_LIBS} -Wl,--exclude-all-symbols -Wl,--exclude-libs,ALL -Wl,--start-group ${libitk} ${libants} -Wl,--end-group ${ADD_PKG_LIBS}" >> Makevars.win
 echo ".PHONY: all libs" >> Makevars.win
 echo "all: \$(SHLIB)" >> Makevars.win
@@ -137,10 +146,16 @@ echo 'libs:' >> Makevars.win
 echo '	mkdir -p libs' >> Makevars.win
 echo '	ls -la antb' >> Makevars.win
 echo '	ls -la .' >> Makevars.win
-echo '	$(MAKEBIN) -C antb -j 4 VERBOSE=1' >> Makevars.win
+echo "	\$(MAKEBIN) -C antb -j ${make_jobs} VERBOSE=1" >> Makevars.win
 echo '	ls -la antb/ANTS-build' >> Makevars.win
 echo '	test -f antb/ANTS-build/Makefile' >> Makevars.win
-echo '	$(MAKEBIN) -C antb/ANTS-build install VERBOSE=1' >> Makevars.win
+echo "	\$(MAKEBIN) -C antb/ANTS-build -j ${make_jobs} VERBOSE=1" >> Makevars.win
+# The ANTs static libraries are linked from the build tree; only install them
+# into libs/lib (~140MB) when ANTSRCORE_INSTALL_LIBS=true, for packages that
+# link against ANTsRCore (e.g. DANTsR).
+if [ "${ANTSRCORE_INSTALL_LIBS}" = "true" ]; then
+  echo '	$(MAKEBIN) -C antb/ANTS-build install VERBOSE=1' >> Makevars.win
+fi
 echo "	rm -rf ${R_PACKAGE_DIR}/libs/bin" >> Makevars.win
 echo '	cd ../../' >> Makevars.win
 

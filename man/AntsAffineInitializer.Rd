@@ -7,7 +7,7 @@
 AntsAffineInitializer(r_args)
 }
 \arguments{
-\item{r_args}{Command-line style character vector or list of arguments passed to \code{ThresholdImage}, matching the corresponding ANTs command interface.}
+\item{r_args}{Command-line style character vector or list of arguments passed to \code{AntsAffineInitializer}, matching the corresponding ANTs command interface.}
 }
 \value{
 Return value from the underlying C++ routine.

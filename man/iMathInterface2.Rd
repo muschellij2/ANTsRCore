@@ -7,7 +7,7 @@
 iMathInterface2(r_args)
 }
 \arguments{
-\item{r_args}{Command-line style character vector or list of arguments passed to \code{iMathInterface1}, matching the corresponding ANTs command interface.}
+\item{r_args}{Command-line style character vector or list of arguments passed to \code{iMathInterface2}, matching the corresponding ANTs command interface.}
 }
 \value{
 Return value from the underlying C++ routine.

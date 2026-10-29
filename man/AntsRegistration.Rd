@@ -7,7 +7,7 @@
 AntsRegistration(r_args)
 }
 \arguments{
-\item{r_args}{Command-line style character vector or list of arguments passed to \code{antsMotionCorrStats}, matching the corresponding ANTs command interface.}
+\item{r_args}{Command-line style character vector or list of arguments passed to \code{AntsRegistration}, matching the corresponding ANTs command interface.}
 }
 \value{
 Return value from the underlying C++ routine.

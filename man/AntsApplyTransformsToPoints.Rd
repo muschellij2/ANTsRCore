@@ -7,7 +7,7 @@
 AntsApplyTransformsToPoints(r_args)
 }
 \arguments{
-\item{r_args}{Command-line style character vector or list of arguments passed to \code{AntsApplyTransforms}, matching the corresponding ANTs command interface.}
+\item{r_args}{Command-line style character vector or list of arguments passed to \code{AntsApplyTransformsToPoints}, matching the corresponding ANTs command interface.}
 }
 \value{
 Return value from the underlying C++ routine.
